@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Routes, Route } from "react-router-dom"; // ✅ Import Router components
 import "./App.css";
 import About from "./Pages/About";
-import Services from "./Pages/Services";
+import Products from "./Pages/Products";
 import Specialities from "./Pages/Specialities";
 import Gallery from "./Pages/Gallery";
 import Booking from "./Pages/Booking";
@@ -19,7 +19,7 @@ function App() {
         <Routes>
           <Route index element={<Home />} />
   <Route path="about" element={<About />} />
-  <Route path="services" element={<Services />} />
+  <Route path="products" element={<Products />} />
   <Route path="specialities" element={<Specialities />} />
   <Route path="gallery" element={<Gallery />} />
   <Route path="booking" element={<Booking />} />

@@ -42,7 +42,7 @@ const Header = () => {
             id="navbarNav"
           >
             <ul className="navbar-nav gap-4">
-              {["Home", "About", "Services", "Specialities", "Gallery", "Booking"].map(
+              {["Home", "About", "Products", "Specialities", "Gallery", "Booking"].map(
                 (item) => (
                   <li key={item} className="nav-item">
                     <NavLink
