@@ -14,8 +14,9 @@ function App() {
   return (
     <>
 
-      <Navbar />
+     
       <div className="Homecontent middle flex-grow-1">
+         <Navbar />
         <Routes>
           <Route index element={<Home />} />
   <Route path="about" element={<About />} />
