@@ -1,463 +1,446 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import styles from "./Products.module.css";
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { 
+  ShoppingCart, 
+  Star, 
+  X, 
+  ChevronLeft, 
+  ChevronRight,
+  Plus,
+  Minus
+} from 'lucide-react';
+import styles from './products.module.css';
+
+// Updated product images with real URLs
+const mockProducts = [
+  // Wigs
+  {
+    id: 1,
+    title: "Silky Straight Human Hair Wig",
+    price: 249.99,
+    category: "wigs",
+    images: [
+      "https://unsplash.com/photos/3-bN6yxk1Y8",
+      "https://unsplash.com/photos/hair-wig-product-flat-lay-1",
+      "https://unsplash.com/photos/vetchCBD-hair-product-example",
+      "https://unsplash.com/photos/2czK-hair-extensions"
+    ],
+    rating: 4.8,
+    reviews: [
+      { user: "Sarah M.", rating: 5, comment: "Absolutely love this wig! So natural and comfortable." },
+      { user: "Jessica T.", rating: 4, comment: "Great quality, slight shedding but overall amazing." }
+    ]
+  },
+  {
+    id: 2,
+    title: "Curly Goddess Lace Front Wig",
+    price: 289.99,
+    category: "wigs",
+    images: [
+      "https://unsplash.com/photos/hair-extensions-multiple-colors",
+      "https://unsplash.com/photos/2czK-hair-extensions",
+      "https://unsplash.com/photos/3-bN6yxk1Y8",
+      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/"
+    ],
+    rating: 4.7,
+    reviews: [
+      { user: "Emily R.", rating: 5, comment: "This wig is stunning!" },
+      { user: "Megan L.", rating: 4, comment: "Very pretty, but a bit heavy." }
+    ]
+  },
+
+  // Hair Bundles
+  {
+    id: 3,
+    title: "Brazilian Body Wave Bundles",
+    price: 189.99,
+    category: "hair-bundles",
+    images: [
+      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/",
+      "https://unsplash.com/photos/hair-extensions-multiple-colors",
+      "https://unsplash.com/photos/2czK-hair-extensions",
+      "https://unsplash.com/photos/hair-wig-product-flat-lay-1"
+    ],
+    rating: 4.6,
+    reviews: [
+      { user: "Maria K.", rating: 5, comment: "Best hair I've ever purchased!" }
+    ]
+  },
+
+  // Braiding Hair
+  {
+    id: 4,
+    title: "Kanekalon Braiding Hair",
+    price: 24.99,
+    category: "braiding-hair",
+    images: [
+      "https://pexels.com/photo/extension-clips-hair-set-flat-lay-76453/",
+      "https://unsplash.com/photos/hair-extensions-multiple-colors",
+      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/",
+      "https://unsplash.com/photos/2czK-hair-extensions"
+    ],
+    rating: 4.4,
+    reviews: []
+  },
+
+  // Perfume & Beauty
+  {
+    id: 5,
+    title: "Elegance Eau de Parfum",
+    price: 89.99,
+    category: "perfume-beauty",
+    images: [
+      "https://pexels.com/photo/perfume-bottle-pink-background-81746/",
+      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
+      "https://pexels.com/photo/skincare-serum-flat-lay-rose-leaves-54321/",
+      "https://pexels.com/photo/beauty-scrub-and-lotion-set-pink-theme-65234/"
+    ],
+    rating: 4.9,
+    reviews: [
+      { user: "Emily R.", rating: 5, comment: "The scent lasts all day! So elegant." }
+    ]
+  },
+
+  // Extensions
+  {
+    id: 6,
+    title: "Clip-in Hair Extensions",
+    price: 129.99,
+    category: "extensions",
+    images: [
+      "https://pexels.com/photo/extension-clips-hair-set-flat-lay-76453/",
+      "https://unsplash.com/photos/2czK-hair-extensions",
+      "https://unsplash.com/photos/hair-extensions-multiple-colors",
+      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/"
+    ],
+    rating: 4.7,
+    reviews: []
+  },
+
+  // Hair Care
+  {
+    id: 7,
+    title: "Argan Oil Hair Treatment",
+    price: 34.99,
+    category: "hair-care",
+    images: [
+      "https://pexels.com/photo/hair-care-oil-bottle-on-table-45678/",
+      "https://unsplash.com/photos/hair-product-display-1",
+      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
+      "https://pexels.com/photo/skincare-serum-flat-lay-rose-leaves-54321/"
+    ],
+    rating: 4.5,
+    reviews: []
+  },
+
+  // Beauty Accessories
+  {
+    id: 8,
+    title: "Premium Makeup Brush Set",
+    price: 49.99,
+    category: "beauty-accessories",
+    images: [
+      "https://pexels.com/photo/beauty-accessories-flat-lay-92134/",
+      "https://unsplash.com/photos/beauty-accessory-jewelry-flat-lay",
+      "https://pexels.com/photo/pink-lipstick-blush-set-white-background-67890/",
+      "https://pexels.com/photo/beauty-scrub-and-lotion-set-pink-theme-65234/"
+    ],
+    rating: 4.3,
+    reviews: []
+  },
+
+  // Beauty Tools
+  {
+    id: 9,
+    title: "Professional Hair Dryer",
+    price: 79.99,
+    category: "beauty-tools",
+    images: [
+      "https://unsplash.com/photos/beauty-tools-display-on-white-background",
+      "https://pexels.com/photo/hair-dryer-product-white-background-10987/",
+      "https://pexels.com/photo/beauty-accessories-flat-lay-92134/",
+      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/"
+    ],
+    rating: 4.6,
+    reviews: []
+  },
+
+  // Lash Kits
+  {
+    id: 10,
+    title: "Luxury Lash Kit",
+    price: 29.99,
+    category: "lash-kits",
+    images: [
+      "https://pexels.com/photo/lash-kit-flat-lay-pink-theme-23456/",
+      "https://pexels.com/photo/pink-lipstick-blush-set-white-background-67890/",
+      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
+      "https://pexels.com/photo/beauty-accessories-flat-lay-92134/"
+    ],
+    rating: 4.8,
+    reviews: []
+  },
+
+  // Sales & Deals
+  {
+    id: 11,
+    title: "Summer Sale Bundle",
+    price: 199.99,
+    originalPrice: 299.99,
+    category: "sales-deals",
+    images: [
+      "https://unsplash.com/photos/sales-deal-beauty-product-promo",
+      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
+      "https://pexels.com/photo/pink-lipstick-blush-set-white-background-67890/",
+      "https://pexels.com/photo/beauty-scrub-and-lotion-set-pink-theme-65234/"
+    ],
+    rating: 4.9,
+    reviews: []
+  }
+];
+
+const categories = [
+  { id: 'all', name: 'All Products', icon: '🛍️', quote: "Discover Your Perfect Beauty Match" },
+  { id: 'wigs', name: 'Wigs', icon: '💇', quote: "Transform Your Look Instantly" },
+  { id: 'hair-bundles', name: 'Hair Bundles', icon: '👑', quote: "Luxury That Flows Naturally" },
+  { id: 'braiding-hair', name: 'Braiding Hair', icon: '🎀', quote: "Create Masterpieces With Every Braid" },
+  { id: 'perfume-beauty', name: 'Perfume & Beauty', icon: '🌸', quote: "Scents That Speak Volumes" },
+  { id: 'extensions', name: 'Extensions', icon: '💫', quote: "Instant Length, Timeless Beauty" },
+  { id: 'hair-care', name: 'Hair Care', icon: '🧴', quote: "Nourish Your Crown With Care" },
+  { id: 'beauty-accessories', name: 'Accessories', icon: '💄', quote: "Details That Define Beauty" },
+  { id: 'beauty-tools', name: 'Beauty Tools', icon: '✨', quote: "Professional Results At Home" },
+  { id: 'lash-kits', name: 'Lash Kits', icon: '👁️', quote: "Eyes That Captivate Instantly" },
+  { id: 'sales-deals', name: 'Sales & Deals', icon: '🔥', quote: "Luxury Within Reach" }
+];
 
 const Products = () => {
-  const [quantities, setQuantities] = useState({});
-  const [cartItems, setCartItems] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentImages, setCurrentImages] = useState({});
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [quantities, setQuantities] = useState({});
 
-  // Style-based products with multiple images
-  const styleProducts = [
-    {
-      id: 1,
-      title: "Silky Straight Brazilian Wig",
-      desc: "Premium 100% Brazilian human hair with natural luster and soft texture. Perfect for everyday wear and special occasions.",
-      price: 189.99,
-      originalPrice: 249.99,
-      rating: 4.8,
-      reviewCount: 124,
-      images: [
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1598703247932-23278ac987b6?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["100% Human Hair", "Heat Resistant", "Natural Parting", "Silky Texture"],
-      badge: "BEST SELLER",
-      type: "straight",
-      reviews: [
-        { reviewer: "Sarah M.", text: "Absolutely love this wig! The quality is amazing and it looks so natural." },
-        { reviewer: "Jessica T.", text: "Worth every penny. The hair is so soft and easy to style." },
-        { reviewer: "Emily R.", text: "Best wig I've ever purchased. Looks completely natural!" },
-        { reviewer: "Lisa K.", text: "The hair quality is exceptional. Will definitely buy again." }
-      ]
-    },
-    {
-      id: 2,
-      title: "Curly Goddess Lace Front",
-      desc: "Beautiful defined curls with transparent lace front for natural hairline. Features 360 stretch cap for perfect fit.",
-      price: 219.99,
-      originalPrice: 279.99,
-      rating: 4.9,
-      reviewCount: 89,
-      images: [
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1559628129-67cf63c5d5e3?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["Lace Front", "Pre-plucked", "360% Stretch", "Defined Curls"],
-      badge: "NEW",
-      type: "curly",
-      reviews: [
-        { reviewer: "Maria L.", text: "The curls are perfect and the lace melts beautifully!" },
-        { reviewer: "Taylor R.", text: "Most comfortable wig I've ever worn. Highly recommend!" },
-        { reviewer: "Amanda S.", text: "The lace front is undetectable. Amazing quality!" }
-      ]
-    },
-    {
-      id: 3,
-      title: "Wavy Body Wave Wig",
-      desc: "Luxurious body wave pattern with medium density for everyday wear. Tangle-free and easy to maintain.",
-      price: 159.99,
-      originalPrice: 199.99,
-      rating: 4.6,
-      reviewCount: 67,
-      images: [
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1559628129-67cf63c5d5e3?w=600&h=600&fit=crop"
-      ],
-      features: ["Medium Density", "Tangle Free", "Shedding Resistant", "Body Wave"],
-      badge: "SALE",
-      type: "wavy",
-      reviews: [
-        { reviewer: "Amanda K.", text: "Perfect for daily use. The waves hold up beautifully." },
-        { reviewer: "Nicole P.", text: "Great value for the quality. Very natural looking." },
-        { reviewer: "Rachel G.", text: "Love the texture and how easy it is to maintain." }
-      ]
-    },
-    {
-      id: 4,
-      title: "Kinky Straight Bob",
-      desc: "Chic bob style with kinky straight texture and baby hair included. Lightweight and comfortable for all-day wear.",
-      price: 139.99,
-      originalPrice: 179.99,
-      rating: 4.7,
-      reviewCount: 92,
-      images: [
-        "https://images.unsplash.com/photo-1596944949408-8f22b5ce0cf3?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["Bob Cut", "Baby Hair", "Lightweight", "Kinky Straight"],
-      badge: "TRENDING",
-      type: "kinky",
-      reviews: [
-        { reviewer: "Chloe B.", text: "Love this bob! It's so stylish and easy to maintain." },
-        { reviewer: "Rachel G.", text: "The perfect length and the texture is amazing." },
-        { reviewer: "Sophia M.", text: "Perfect for everyday wear. Very comfortable." }
-      ]
-    }
-  ];
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'all') return mockProducts;
+    return mockProducts.filter(product => product.category === selectedCategory);
+  }, [selectedCategory]);
 
-  // Color-based products with multiple images
-  const colorProducts = [
-    {
-      id: 5,
-      title: "Blonde Balayage Lace Front",
-      desc: "Stunning blonde balayage on straight hair with HD lace front. Pre-bleached knots for natural look.",
-      price: 269.99,
-      originalPrice: 329.99,
-      rating: 4.8,
-      reviewCount: 73,
-      images: [
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1534528741771-539b5c037d1a?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop"
-      ],
-      features: ["Balayage", "HD Lace", "Pre-bleached", "Blonde"],
-      badge: "LUXURY",
-      type: "blonde",
-      reviews: [
-        { reviewer: "Ashley P.", text: "The color is even more beautiful in person!" },
-        { reviewer: "Kimberly L.", text: "Perfect blend and the lace is undetectable." },
-        { reviewer: "Tiffany R.", text: "The balayage is perfectly done. Looks so natural!" }
-      ]
-    },
-    {
-      id: 6,
-      title: "Brunette Ombre Wig",
-      desc: "Natural brunette to caramel ombre with seamless color transition. Perfect for a sophisticated look.",
-      price: 199.99,
-      originalPrice: 259.99,
-      rating: 4.7,
-      reviewCount: 88,
-      images: [
-        "https://images.unsplash.com/photo-1519699047748-4f0c6c5a2e4a?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1534517029666-978a4d1a5f3c?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop"
-      ],
-      features: ["Ombre", "Natural Brown", "Color Blend", "Brunette"],
-      badge: "POPULAR",
-      type: "brunette",
-      reviews: [
-        { reviewer: "Michelle L.", text: "The color transition is so natural and beautiful!" },
-        { reviewer: "Jennifer K.", text: "Perfect for everyday wear. Love the natural look." }
-      ]
-    },
-    {
-      id: 7,
-      title: "Jet Black Straight Wig",
-      desc: "Rich jet black color with silky straight texture and high shine. Classic look that never goes out of style.",
-      price: 179.99,
-      originalPrice: 229.99,
-      rating: 4.6,
-      reviewCount: 95,
-      images: [
-        "https://images.unsplash.com/photo-1545235612-7a3ded345acf?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop"
-      ],
-      features: ["Jet Black", "High Shine", "Straight", "Classic"],
-      badge: "CLASSIC",
-      type: "black",
-      reviews: [
-        { reviewer: "Nicole R.", text: "The black color is so rich and vibrant!" },
-        { reviewer: "Amanda T.", text: "Perfect for formal occasions. Looks stunning!" }
-      ]
-    },
-    {
-      id: 8,
-      title: "Caramel Highlights Wig",
-      desc: "Warm caramel highlights on brown base for dimensional look. Adds depth and movement to your style.",
-      price: 229.99,
-      originalPrice: 289.99,
-      rating: 4.8,
-      reviewCount: 67,
-      images: [
-        "https://images.unsplash.com/photo-1534517029666-978a4d1a5f3c?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1519699047748-4f0c6c5a2e4a?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["Caramel", "Highlights", "Dimensional", "Warm Tones"],
-      badge: "TRENDING",
-      type: "caramel",
-      reviews: [
-        { reviewer: "Samantha P.", text: "The highlights add so much dimension!" },
-        { reviewer: "Brittany M.", text: "Perfect color for summer. Love it!" }
-      ]
-    }
-  ];
-
-  const updateQuantity = (productId, change) => {
-    setQuantities(prev => ({
-      ...prev,
-      [productId]: Math.max(1, (prev[productId] || 1) + change)
-    }));
+  const getCategoryQuote = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.quote : "Discover Your Perfect Beauty Match";
   };
 
-  const addToCart = (product) => {
+  const handleQuantityChange = (productId, newQuantity) => {
+    setQuantities(prevQuantities => ({ ...prevQuantities, [productId]: newQuantity }));
+  };
+
+  const handleAddToCart = (product) => {
     const quantity = quantities[product.id] || 1;
-    setCartItems(prev => ({
-      ...prev,
-      [product.id]: (prev[product.id] || 0) + quantity
-    }));
-    
-    // Show subtle feedback
-    const button = document.querySelector(`[data-product="${product.id}"]`);
-    if (button) {
-      const originalText = button.textContent;
-      button.textContent = 'Added to Cart!';
-      button.style.background = 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)';
-      setTimeout(() => {
-        button.textContent = originalText;
-        button.style.background = '';
-      }, 2000);
+    toast.success(`Added ${quantity} ${product.title} to cart!`, {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
+  const handleViewReviews = (product) => {
+    setSelectedProduct(product);
+    setCurrentImageIndex(0);
+  };
+
+  const closeModal = () => {
+    setSelectedProduct(null);
+    setIsImageModalOpen(false);
+    setCurrentImageIndex(0);
+  };
+
+  const openImageModal = (product, index = 0) => {
+    setSelectedProduct(product);
+    setCurrentImageIndex(index);
+    setIsImageModalOpen(true);
+  };
+
+  const nextImage = () => {
+    if (selectedProduct) {
+      setCurrentImageIndex((prev) => 
+        prev === selectedProduct.images.length - 1 ? 0 : prev + 1
+      );
     }
-    
-    // Reset quantity
+  };
+
+  const prevImage = () => {
+    if (selectedProduct) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? selectedProduct.images.length - 1 : prev - 1
+      );
+    }
+  };
+
+  const increaseQuantity = (productId, e) => {
+    e.stopPropagation();
     setQuantities(prev => ({
       ...prev,
-      [product.id]: 1
+      [productId]: (prev[productId] || 1) + 1
     }));
   };
 
-  const openReviewsModal = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  };
-
-  const closeReviewsModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-  };
-
-  const changeImage = (productId, imageIndex, direction = null) => {
-    const product = [...styleProducts, ...colorProducts].find(p => p.id === productId);
-    if (!product) return;
-
-    const currentIndex = currentImages[productId] || 0;
-    let newIndex;
-
-    if (direction === 'next') {
-      newIndex = (currentIndex + 1) % product.images.length;
-    } else if (direction === 'prev') {
-      newIndex = (currentIndex - 1 + product.images.length) % product.images.length;
-    } else {
-      newIndex = imageIndex;
-    }
-
-    setCurrentImages(prev => ({
+  const decreaseQuantity = (productId, e) => {
+    e.stopPropagation();
+    setQuantities(prev => ({
       ...prev,
-      [productId]: newIndex
+      [productId]: Math.max(1, (prev[productId] || 1) - 1)
     }));
   };
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, index) => (
-      <span 
-        key={index} 
-        className={styles.star}
-        style={{ 
-          color: index < Math.floor(rating) ? '#ffb400' : '#e0e0e0'
-        }}
-      >
-        ★
-      </span>
+      <Star
+        key={index}
+        size={16}
+        className={index < Math.floor(rating) ? styles.filledStar : styles.emptyStar}
+        fill={index < Math.floor(rating) ? 'currentColor' : 'none'}
+      />
     ));
   };
 
-  // Filter products based on search term
-  const filteredStyleProducts = styleProducts.filter(product =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.features.some(feature => 
-      feature.toLowerCase().includes(searchTerm.toLowerCase())
-    ) ||
-    product.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const CategorySection = ({ categoryId, categoryName, products, quote }) => {
+    if (products.length === 0) return null;
 
-  const filteredColorProducts = colorProducts.filter(product =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.features.some(feature => 
-      feature.toLowerCase().includes(searchTerm.toLowerCase())
-    ) ||
-    product.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    return (
+      <section className={styles.categorySection} id={categoryId}>
+        <motion.div
+          className={styles.categoryHeader}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <h2 className={styles.categoryTitle}>{categoryName}</h2>
+          <p className={styles.categoryQuote}>"{quote}"</p>
+        </motion.div>
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { y: 30, opacity: 0, scale: 0.9 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const modalVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut"
-      }
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      transition: {
-        duration: 0.3
-      }
-    }
+        <div className={styles.productsGrid}>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+    );
   };
 
   const ProductCard = ({ product }) => {
-    const currentImageIndex = currentImages[product.id] || 0;
+    const [hoverIndex, setHoverIndex] = useState(0);
 
     return (
       <motion.div
-        className={styles.card}
-        variants={cardVariants}
-        whileHover={{ y: -8 }}
+        className={styles.productCard}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.3 }}
+        whileHover={{ y: -5 }}
       >
-        {product.badge && (
-          <div className={styles.badge}>
-            {product.badge}
-          </div>
-        )}
-        
-        <div className={styles.imageGallery}>
-          <motion.img 
-            src={product.images[currentImageIndex]} 
-            alt={product.title}
-            className={styles.mainImage}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.4 }}
-          />
-          
-          {product.images.length > 1 && (
-            <>
-              <button 
-                className={`${styles.imageNav} ${styles.prev}`}
-                onClick={() => changeImage(product.id, null, 'prev')}
-                aria-label="Previous image"
-              >
-                ‹
-              </button>
-              <button 
-                className={`${styles.imageNav} ${styles.next}`}
-                onClick={() => changeImage(product.id, null, 'next')}
-                aria-label="Next image"
-              >
-                ›
-              </button>
-              
-              <div className={styles.imageThumbnails}>
-                {product.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`${product.title} view ${index + 1}`}
-                    className={`${styles.thumbnail} ${index === currentImageIndex ? styles.active : ''}`}
-                    onClick={() => changeImage(product.id, index)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-        
-        <div className={styles.cardContent}>
-          <h3>{product.title}</h3>
-          <p>{product.desc}</p>
-          
-          <div className={styles.features}>
-            {product.features.map((feature, index) => (
-              <span key={index} className={styles.feature}>
-                {feature}
-              </span>
+        <div 
+          className={styles.imageContainer}
+          onMouseEnter={() => setHoverIndex(1)}
+          onMouseLeave={() => setHoverIndex(0)}
+          onClick={() => openImageModal(product, 0)}
+        >
+          <div className={styles.imageSlider}>
+            {product.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`${product.title} view ${index + 1}`}
+                className={`${styles.productImage} ${
+                  index === hoverIndex ? styles.activeImage : ''
+                }`}
+              />
             ))}
           </div>
           
-          <div className={styles.rating}>
+          {/* Sale Badge */}
+          {product.originalPrice && (
+            <div className={styles.saleBadge}>SALE</div>
+          )}
+
+          {/* Image Navigation Hint */}
+          <div className={styles.imageNavHint}>
+            <span>Click to view gallery</span>
+          </div>
+        </div>
+
+        <div className={styles.productInfo}>
+          <h3 className={styles.productTitle}>{product.title}</h3>
+          
+          <div className={styles.priceSection}>
+            {product.originalPrice ? (
+              <>
+                <span className={styles.currentPrice}>
+                  ${product.price}
+                </span>
+                <span className={styles.originalPrice}>
+                  ${product.originalPrice}
+                </span>
+              </>
+            ) : (
+              <span className={styles.currentPrice}>
+                ${product.price}
+              </span>
+            )}
+          </div>
+
+          <div className={styles.ratingSection}>
             <div className={styles.stars}>
               {renderStars(product.rating)}
             </div>
-            <span className={styles.ratingCount}>
-              {product.rating} ({product.reviewCount} reviews)
-            </span>
+            <span className={styles.ratingValue}>({product.rating})</span>
           </div>
-          
-          <motion.button 
-            className={styles.viewReviewsBtn}
-            onClick={() => openReviewsModal(product)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            View Reviews ({product.reviews.length})
-          </motion.button>
-          
-          <div className={styles.price}>
-            ${product.price}
-            {product.originalPrice && (
-              <span className={styles.originalPrice}>${product.originalPrice}</span>
-            )}
-          </div>
-          
-          <div className={styles.actions}>
-            <div className={styles.quantitySelector}>
+
+          <div className={styles.quantitySection}>
+            <span className={styles.quantityLabel}>Quantity:</span>
+            <div className={styles.quantityControls}>
               <button 
                 className={styles.quantityButton}
-                onClick={() => updateQuantity(product.id, -1)}
-                aria-label="Decrease quantity"
+                onClick={(e) => decreaseQuantity(product.id, e)}
               >
-                −
+                <Minus size={14} />
               </button>
-              <span className={styles.quantity}>
+              <span className={styles.quantityValue}>
                 {quantities[product.id] || 1}
               </span>
               <button 
                 className={styles.quantityButton}
-                onClick={() => updateQuantity(product.id, 1)}
-                aria-label="Increase quantity"
+                onClick={(e) => increaseQuantity(product.id, e)}
               >
-                +
+                <Plus size={14} />
               </button>
             </div>
-            
-            <motion.button 
-              className={styles.addToCart}
-              onClick={() => addToCart(product)}
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <motion.button
+              className={styles.addToCartButton}
+              onClick={() => handleAddToCart(product)}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              data-product={product.id}
             >
+              <ShoppingCart size={18} />
               Add to Cart
+            </motion.button>
+            
+            <motion.button
+              className={styles.reviewsButton}
+              onClick={() => handleViewReviews(product)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              View Reviews
             </motion.button>
           </div>
         </div>
@@ -467,157 +450,224 @@ const Products = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header Section */}
-      <div className={styles.header}>
-        <motion.h1 
-          className={styles.title}
-          initial={{ opacity: 0, y: -30 }}
+      {/* Hero Section */}
+      <section className={styles.heroSection}>
+        <motion.div
+          className={styles.heroContent}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          transition={{ duration: 0.8 }}
         >
-          Luxury Wig Collection
-        </motion.h1>
-        <motion.p 
-          className={styles.subtitle}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-        >
-          Discover premium quality wigs with multiple styling options and natural looks
-        </motion.p>
-        
-        {/* Search Bar */}
-        <motion.div 
-          className={styles.searchContainer}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-        >
-          <div className={styles.searchIcon}>🔍</div>
-          <input
-            type="text"
-            placeholder="Search wigs by style, color, or features..."
-            className={styles.searchBar}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <h1 className={styles.heroTitle}>Elevate Your Beauty Journey</h1>
+          <p className={styles.heroSubtitle}>
+            Discover premium beauty products crafted for the modern, sophisticated you. 
+            Where luxury meets self-expression.
+          </p>
         </motion.div>
-      </div>
+      </section>
 
-      {/* Style-Based Products Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-      >
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Popular Styles</h2>
-          <p className={styles.sectionSubtitle}>Explore our most loved wig styles and textures</p>
-          <a href="#all-styles" className={styles.viewAll}>View All Styles</a>
-        </div>
-        
-        <motion.div 
-          className={styles.grid}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {filteredStyleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+      {/* Category Filter */}
+      <section className={styles.categoryFilterSection}>
+        <div className={styles.categoryScroll}>
+          {categories.map((category) => (
+            <motion.button
+              key={category.id}
+              className={`${styles.categoryButton} ${
+                selectedCategory === category.id ? styles.activeCategory : ''
+              }`}
+              onClick={() => setSelectedCategory(category.id)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className={styles.categoryIcon}>{category.icon}</span>
+              <span className={styles.categoryName}>{category.name}</span>
+            </motion.button>
           ))}
-        </motion.div>
-      </motion.section>
-
-      {/* Color-Based Products Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
-      >
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Hair Colors</h2>
-          <p className={styles.sectionSubtitle}>Find your perfect shade from our color collection</p>
-          <a href="#all-colors" className={styles.viewAll}>View All Colors</a>
         </div>
-        
-        <motion.div 
-          className={styles.grid}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {filteredColorProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </motion.div>
-      </motion.section>
+      </section>
 
-      {/* Reviews Modal */}
+      {/* All Products View */}
+      {selectedCategory === 'all' && (
+        <div className={styles.allCategories}>
+          {categories.filter(cat => cat.id !== 'all').map(category => (
+            <CategorySection
+              key={category.id}
+              categoryId={category.id}
+              categoryName={category.name}
+              products={mockProducts.filter(p => p.category === category.id)}
+              quote={category.quote}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Single Category View */}
+      {selectedCategory !== 'all' && (
+        <CategorySection
+          categoryId={selectedCategory}
+          categoryName={categories.find(cat => cat.id === selectedCategory)?.name || ''}
+          products={filteredProducts}
+          quote={getCategoryQuote(selectedCategory)}
+        />
+      )}
+
+      {/* Image Modal */}
       <AnimatePresence>
-        {isModalOpen && selectedProduct && (
-          <motion.div 
+        {isImageModalOpen && selectedProduct && (
+          <motion.div
             className={styles.modalOverlay}
-            onClick={closeReviewsModal}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={closeModal}
           >
-            <motion.div 
-              className={styles.modalContent}
+            <motion.div
+              className={styles.imageModalContent}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
             >
-              <div className={styles.modalHeader}>
-                <h2>{selectedProduct.title} - Reviews</h2>
-                <button 
-                  className={styles.closeButton}
-                  onClick={closeReviewsModal}
-                  aria-label="Close reviews"
-                >
-                  ×
-                </button>
-              </div>
-              
-              <div className={styles.modalRating}>
-                <div className={styles.modalStars}>
-                  {renderStars(selectedProduct.rating)}
-                </div>
-                <span className={styles.modalRatingText}>
-                  {selectedProduct.rating} out of 5 · {selectedProduct.reviewCount} reviews
-                </span>
-              </div>
-              
-              <div className={styles.reviewsList}>
-                {selectedProduct.reviews.map((review, index) => (
-                  <div key={index} className={styles.modalReview}>
-                    <div className={styles.modalReviewHeader}>
-                      <span className={styles.modalReviewer}>{review.reviewer}</span>
-                      <div className={styles.modalReviewStars}>
-                        {renderStars(selectedProduct.rating)}
-                      </div>
-                    </div>
-                    <p className={styles.modalReviewText}>"{review.text}"</p>
+              <button className={styles.closeButton} onClick={closeModal}>
+                <X size={24} />
+              </button>
+
+              <div className={styles.imageModalBody}>
+                <div className={styles.mainImageContainer}>
+                  <img
+                    src={selectedProduct.images[currentImageIndex]}
+                    alt={selectedProduct.title}
+                    className={styles.modalMainImage}
+                  />
+                  
+                  <button className={styles.navButtonLeft} onClick={prevImage}>
+                    <ChevronLeft size={32} />
+                  </button>
+                  <button className={styles.navButtonRight} onClick={nextImage}>
+                    <ChevronRight size={32} />
+                  </button>
+
+                  <div className={styles.imageCounter}>
+                    {currentImageIndex + 1} / {selectedProduct.images.length}
                   </div>
-                ))}
-              </div>
-              
-              <div className={styles.modalActions}>
-                <motion.button 
-                  className={styles.continueShopping}
-                  onClick={closeReviewsModal}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Continue Shopping
-                </motion.button>
+                </div>
+
+                <div className={styles.modalThumbnails}>
+                  {selectedProduct.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Thumbnail ${index + 1}`}
+                      className={`${styles.modalThumbnail} ${
+                        index === currentImageIndex ? styles.activeModalThumbnail : ''
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    />
+                  ))}
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Review Modal */}
+      <AnimatePresence>
+        {selectedProduct && !isImageModalOpen && (
+          <motion.div
+            className={styles.modalOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+          >
+            <motion.div
+              className={styles.modalContent}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className={styles.closeButton} onClick={closeModal}>
+                <X size={24} />
+              </button>
+
+              <div className={styles.modalBody}>
+                <div className={styles.modalImages}>
+                  <div className={styles.mainImage}>
+                    <img
+                      src={selectedProduct.images[0]}
+                      alt={selectedProduct.title}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.modalDetails}>
+                  <h2>{selectedProduct.title}</h2>
+                  <div className={styles.modalRating}>
+                    <div className={styles.stars}>
+                      {renderStars(selectedProduct.rating)}
+                    </div>
+                    <span>Average Rating: {selectedProduct.rating}/5</span>
+                  </div>
+
+                  <div className={styles.reviewsSection}>
+                    <h3>Customer Reviews</h3>
+                    {selectedProduct.reviews.length > 0 ? (
+                      selectedProduct.reviews.map((review, index) => (
+                        <div key={index} className={styles.reviewItem}>
+                          <div className={styles.reviewHeader}>
+                            <strong>{review.user}</strong>
+                            <div className={styles.stars}>
+                              {renderStars(review.rating)}
+                            </div>
+                          </div>
+                          <p>{review.comment}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No reviews yet. Be the first to review!</p>
+                    )}
+                  </div>
+
+                  <div className={styles.modalQuantity}>
+                    <span>Quantity:</span>
+                    <div className={styles.quantityControls}>
+                      <button 
+                        className={styles.quantityButton}
+                        onClick={(e) => decreaseQuantity(selectedProduct.id, e)}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className={styles.quantityValue}>
+                        {quantities[selectedProduct.id] || 1}
+                      </span>
+                      <button 
+                        className={styles.quantityButton}
+                        onClick={(e) => increaseQuantity(selectedProduct.id, e)}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <motion.button
+                    className={styles.addToCartButton}
+                    onClick={() => handleAddToCart(selectedProduct)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ShoppingCart size={18} />
+                    Add to Cart - ${selectedProduct.price}
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <ToastContainer />
     </div>
   );
 };
