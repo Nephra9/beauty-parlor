@@ -1,25 +1,803 @@
 .container {
-  padding: 60px 20px;
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FADADD 0%, #FFE6EB 50%, #FFF9FA 100%);
+  padding: 120px 20px 80px;
+  overflow: hidden;
+}
+
+/* Background Particles */
+.backgroundParticles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 182, 193, 0.4); /* Baby pink */
+  border-radius: 50%;
+  animation: floatParticle 8s ease-in-out infinite;
+}
+
+@keyframes floatParticle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-100px) rotate(180deg);
+  }
+}
+
+/* Header Styles */
+.header {
   text-align: center;
+  margin-bottom: 100px;
 }
 
-.title {
-  color: #ff69b4;
-  margin-bottom: 25px;
+.titleContainer {
+  position: relative;
+  margin-bottom: 40px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s ease;
 }
 
-.list {
-  list-style: none;
-  padding: 0;
+.titleContainer.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.list li {
-  background: #fffafc;
-  border-radius: 10px;
-  margin: 10px auto;
-  padding: 15px 20px;
-  max-width: 400px;
-  font-size: 18px;
-  color: #555;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+.mainTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: #e86d84; /* Darker baby pink - thicker */
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.underlineContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.underline {
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #e86d84, transparent); /* Darker baby pink */
+  transition: width 1.5s ease 0.5s;
+}
+
+.underline.animateUnderline {
+  width: 200px;
+}
+
+.quoteContainer {
+  margin-top: 40px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s ease 1s;
+}
+
+.quoteContainer.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quote {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: #b85c7a; /* Much darker pink - thicker */
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+  opacity: 1 !important;
+  visibility: visible !important;
+  font-weight: 500;
+}
+
+/* Section Titles */
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700; /* Bolder */
+  color: #e86d84; /* Darker baby pink - thicker */
+  text-align: center;
+  margin-bottom: 60px;
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e86d84, transparent); /* Darker baby pink */
+}
+
+/* Craftsmanship Section */
+.craftsmanship {
+  margin-bottom: 120px;
+}
+
+.craftsmanshipGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.craftsmanshipCard {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.imageWrapper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.15); /* Baby pink shadow */
+  transition: all 0.4s ease;
+  aspect-ratio: 3/4;
+}
+
+.imageWrapper:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(255, 182, 193, 0.25); /* Baby pink shadow */
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.4s ease;
+}
+
+.imageWrapper:hover .cardImage {
+  transform: scale(1.1);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 182, 193, 0.4); /* Baby pink overlay */
+  opacity: 0;
+  transition: all 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.imageWrapper:hover .overlay {
+  opacity: 1;
+}
+
+.overlayContent {
+  text-align: center;
+  color: white;
+  transform: translateY(20px);
+  transition: transform 0.4s ease 0.1s;
+}
+
+.imageWrapper:hover .overlayContent {
+  transform: translateY(0);
+}
+
+.overlayTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700; /* Bolder */
+  margin-bottom: 10px;
+  opacity: 1;
+  visibility: visible;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.overlayDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem; /* Slightly larger */
+  opacity: 0.95;
+  line-height: 1.5;
+  opacity: 1;
+  visibility: visible;
+  font-weight: 500; /* Medium weight */
+}
+
+/* Customization Section with Flip Cards */
+.customization {
+  margin-bottom: 120px;
+  padding: 80px 40px;
+  background: linear-gradient(135deg, rgba(255, 230, 235, 0.8), rgba(255, 182, 193, 0.9)); /* Baby pink gradient */
+  border-radius: 30px;
+}
+
+.customizationGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.customizationCard {
+  background: transparent;
+  perspective: 1000px;
+  height: 280px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease forwards;
+  cursor: pointer;
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s ease;
+  transform-style: preserve-3d;
+  border-radius: 20px;
+}
+
+.customizationCard.flipped .cardInner {
+  transform: rotateY(180deg);
+}
+
+.cardFront,
+.cardBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 25px;
+}
+
+.cardFront {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15); /* Baby pink shadow */
+}
+
+.cardBack {
+  background: linear-gradient(135deg, #ffb6c1, #ff91a4); /* Baby pink gradient */
+  color: white;
+  transform: rotateY(180deg);
+  box-shadow: 0 15px 35px rgba(255, 182, 193, 0.25); /* Baby pink shadow */
+}
+
+.customizationIcon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+.backIcon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  opacity: 0.9;
+}
+
+.customizationTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700; /* Bolder */
+  color: #e86d84; /* Darker baby pink - thicker */
+  margin-bottom: 15px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.customizationDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem; /* Slightly larger */
+  color: #b85c7a; /* Much darker pink - thicker */
+  line-height: 1.5;
+  opacity: 1;
+  visibility: visible;
+  margin-bottom: 15px;
+  font-weight: 500; /* Medium weight */
+}
+
+.backText {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.05rem; /* Slightly larger */
+  line-height: 1.6;
+  text-align: center;
+  opacity: 0.95;
+  font-weight: 500; /* Medium weight */
+}
+
+.quoteMark {
+  font-size: 2rem;
+  opacity: 0.7;
+  margin-top: 15px;
+  font-family: 'Playfair Display', serif;
+}
+
+.flipHint {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem; /* Slightly larger */
+  color: #e86d84; /* Darker baby pink */
+  font-style: italic;
+  margin-top: 10px;
+  opacity: 0.8;
+  font-weight: 500; /* Medium weight */
+}
+
+/* Variety & Comfort Section */
+.varietyComfort {
+  margin-bottom: 120px;
+}
+
+.varietyContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.varietyTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 700; /* Bolder */
+  color: #e86d84; /* Darker baby pink - thicker */
+  margin-bottom: 40px;
+  opacity: 1;
+  visibility: visible;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.featuresList {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  opacity: 0;
+  transform: translateX(-30px);
+  animation: slideInRight 0.8s ease forwards;
+}
+
+@keyframes slideInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.featureIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  opacity: 1;
+  visibility: visible;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 182, 193, 0.3); /* Baby pink background */
+  border-radius: 50%;
+  color: #e86d84; /* Darker baby pink */
+}
+
+.featureText h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem; /* Slightly larger */
+  font-weight: 700; /* Bolder */
+  color: #e86d84; /* Darker baby pink - thicker */
+  margin-bottom: 8px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.featureText p {
+  font-family: 'Poppins', sans-serif;
+  color: #b85c7a; /* Much darker pink - thicker */
+  line-height: 1.6;
+  opacity: 1;
+  visibility: visible;
+  font-weight: 500; /* Medium weight */
+  font-size: 0.95rem; /* Slightly larger */
+}
+
+.imageCollage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  height: 100%;
+  align-items: stretch;
+}
+
+.collageImage {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.15); /* Baby pink shadow */
+  transition: all 0.4s ease;
+  opacity: 0;
+  transform: translateY(30px) rotate(-2deg);
+  animation: fadeInUp 0.8s ease forwards;
+  height: 220px;
+  position: relative;
+}
+
+.collageImage:nth-child(even) {
+  transform: translateY(30px) rotate(2deg);
+}
+
+.collageImage:hover {
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 0 15px 35px rgba(255, 182, 193, 0.25); /* Baby pink shadow */
+}
+
+.collageImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+}
+
+.collageImage:hover .collageImg {
+  transform: scale(1.1);
+}
+
+/* Slider Section */
+.sliderSection {
+  margin-bottom: 100px;
+  padding: 60px 0;
+  position: relative;
+}
+
+.sliderContainer {
+  overflow: hidden;
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 0;
+}
+
+.sliderTrack {
+  display: flex;
+  gap: 40px;
+  animation: slideInfinite 35s linear infinite;
+  width: max-content;
+}
+
+@keyframes slideInfinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.sliderItem {
+  flex: 0 0 auto;
+}
+
+.sliderImageContainer {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  overflow: visible;
+  transition: all 0.4s ease;
+}
+
+.sliderImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 
+    0 12px 30px rgba(255, 182, 193, 0.2), /* Baby pink shadow */
+    0 0 0 5px rgba(255, 255, 255, 0.9),
+    0 0 0 7px rgba(255, 182, 193, 0.4); /* Baby pink border */
+  transition: all 0.4s ease;
+  filter: brightness(1.05);
+}
+
+.sliderImageContainer:hover {
+  transform: scale(1.12);
+  z-index: 10;
+}
+
+.sliderImageContainer:hover .sliderImage {
+  box-shadow: 
+    0 18px 40px rgba(255, 182, 193, 0.35), /* Baby pink shadow */
+    0 0 0 6px rgba(255, 255, 255, 0.95),
+    0 0 0 10px rgba(255, 182, 193, 0.6); /* Baby pink border */
+  filter: brightness(1.1);
+}
+
+.sliderOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 182, 193, 0.4); /* Baby pink overlay */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.4s ease;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; /* Semi-bold */
+  font-size: 0.95rem; /* Slightly larger */
+  backdrop-filter: blur(5px);
+  text-align: center;
+  padding: 20px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.sliderImageContainer:hover .sliderOverlay {
+  opacity: 1;
+}
+
+/* Closing Section */
+.closingSection {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.closingContent {
+  position: relative;
+  text-align: center;
+  padding: 60px 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.15); /* Baby pink shadow */
+  border: 1px solid rgba(255, 182, 193, 0.2); /* Baby pink border */
+}
+
+.sparkleBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0;
+  animation: sparkleFloat 3s ease-in-out infinite;
+  color: #e86d84; /* Darker baby pink sparkles */
+}
+
+@keyframes sparkleFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.2);
+  }
+}
+
+.closingText {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem; /* Slightly larger */
+  line-height: 1.8;
+  color: #b85c7a; /* Much darker pink - thicker */
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  opacity: 1;
+  visibility: visible;
+  font-weight: 500; /* Medium weight */
+}
+
+/* Additional Baby Pink Elements */
+.buttonsSection {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #ffb6c1, #ff91a4); /* Baby pink gradient */
+  color: white;
+  border: none;
+  padding: 15px 35px;
+  border-radius: 25px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; /* Semi-bold */
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255, 182, 193, 0.3);
+}
+
+.primaryButton:hover {
+  background: linear-gradient(135deg, #ff91a4, #ffb6c1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 182, 193, 0.4);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: #e86d84; /* Darker baby pink */
+  border: 2px solid #e86d84; /* Darker baby pink */
+  padding: 13px 33px;
+  border-radius: 25px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; /* Semi-bold */
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 15px;
+}
+
+.secondaryButton:hover {
+  background: #e86d84; /* Darker baby pink */
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 182, 193, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .craftsmanshipGrid,
+  .customizationGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .varietyContent {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .sliderImageContainer {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 80px 15px 60px;
+  }
+  
+  .mainTitle {
+    font-size: 3rem;
+  }
+  
+  .craftsmanshipGrid,
+  .customizationGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .sectionTitle {
+    font-size: 2.2rem;
+  }
+  
+  .varietyTitle {
+    font-size: 2rem;
+  }
+  
+  .imageCollage {
+    grid-template-columns: 1fr;
+  }
+  
+  .sliderImageContainer {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .customizationCard {
+    height: 250px;
+  }
+  
+  .collageImage {
+    height: 200px;
+  }
+  
+  .primaryButton,
+  .secondaryButton {
+    padding: 12px 25px;
+    font-size: 1rem;
+    margin: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainTitle {
+    font-size: 2.2rem;
+  }
+  
+  .quote {
+    font-size: 1.1rem;
+  }
+  
+  .craftsmanshipGrid,
+  .customizationGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .customization {
+    padding: 40px 20px;
+  }
+  
+  .closingText {
+    font-size: 1.15rem;
+  }
+  
+  .sliderImageContainer {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .collageImage {
+    height: 160px;
+  }
+  
+  .sliderTrack {
+    gap: 25px;
+  }
+  
+  .buttonsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .secondaryButton {
+    margin-left: 0;
+  }
 }

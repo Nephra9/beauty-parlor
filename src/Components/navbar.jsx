@@ -1,15 +1,23 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../assets/logo.jpg";
-import styles from "./header.module.css"; // ✅ Import CSS Module
+import styles from "./header.module.css";
 
 const Header = () => {
+  const location = useLocation();
+
+  // Check if we’re on the Home page
+  const isHomePage = location.pathname === "/";
+
   return (
-    <header className={styles.header}>
-      <nav className={`navbar navbar-expand-lg navbar-dark ${styles.navbar}`}>
+    <header
+      className={`${styles.header} ${
+        isHomePage ? styles.floatingHeader : styles.fixedHeader
+      } ${isHomePage ? styles.transparentHeader : styles.solidHeader}`}
+    >
+      <nav className={`navbar navbar-expand-lg ${styles.navbar}`}>
         <div className="container">
-          {/* Brand Section */}
           <NavLink className="navbar-brand d-flex align-items-center" to="/">
             <img
               src={logo}
@@ -18,37 +26,32 @@ const Header = () => {
               height="50"
               className={`rounded-circle border border-light me-2 ${styles.logo}`}
             />
-            <span className={`fw-light fs-4 text-white ${styles.brandName}`}>
+            <span className={`fw-light fs-4 ${styles.brandName}`}>
               Beauty Bliss
             </span>
           </NavLink>
 
-          {/* Hamburger Menu */}
           <button
             className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          {/* Nav Links */}
           <div
             className={`collapse navbar-collapse justify-content-center ${styles.navMenu}`}
             id="navbarNav"
           >
             <ul className="navbar-nav gap-4">
-              {["Home", "About", "Services", "Specialities", "Gallery", "Booking"].map(
+              {["Home", "About", "Products", "Specialities", "Gallery", "Booking"].map(
                 (item) => (
                   <li key={item} className="nav-item">
                     <NavLink
                       to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
                       className={({ isActive }) =>
-                        `nav-link text-white ${styles.navLink} ${
+                        `nav-link ${styles.navLink} ${
                           isActive ? styles.active : ""
                         }`
                       }

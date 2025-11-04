@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
+/* ================= HOME SECTION ================= */
 .homeContainer {
   background-color: #fffafc;
   min-height: 70vh;
@@ -27,4 +30,669 @@
   background-color: #ff69b4;
   color: white;
   transform: translateY(-3px);
+}
+
+/* ================= HERO SECTION ================= */
+.mainpic {
+  position: relative;
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.imagediv {
+  background-color: white;
+  height: 100%;
+  width: 100%;
+}
+
+.heroimage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Pink overlay layer */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 105, 180, 0.35);
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.textContent {
+  color: white;
+  max-width: 700px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.textContent h1 {
+  font-size: 2.5rem;
+  font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+.textContent p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  font-family: "Varela Round", sans-serif;
+}
+
+.textContent button {
+  background-color: #fff;
+  color: #ff69b4;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.textContent button:hover {
+  background-color: #ff69b4;
+  color: white;
+  transform: translateY(-3px);
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+@media (max-width: 768px) {
+  .textContent h1 {
+    font-size: 2rem;
+  }
+
+  .textContent p {
+    font-size: 1rem;
+  }
+
+  .textContent {
+    padding: 15px;
+  }
+
+  .mainpic {
+    height: 70vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .textContent h1 {
+    font-size: 1.6rem;
+  }
+
+  .textContent p {
+    font-size: 0.9rem;
+  }
+
+  .mainpic {
+    height: 60vh;
+  }
+}
+
+/* ================= SECOND SECTION ================= */
+.second {
+  /* background: rgba(255, 105, 180, 0.35); */
+  height: 80vh;
+  width: 100vw;
+  /* padding: 1rem; */
+}
+
+.subsec {
+  border-radius: 25px;
+  height: 100%;
+  width: 100%;
+ background-color: #f5e1e7;
+  overflow: hidden;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+
+.innerdiv {
+  height: 20% !important; /* increased height */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: white;
+}
+
+.innerdiv h1 {
+  font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  font-size: 3rem;
+  color: #ff69b4;
+  text-align: center;
+  background-color: white;
+}
+
+/* ================= CAROUSEL ================= */
+
+.secondcards {
+  width: 100%;
+  overflow: hidden;
+  /* padding: 2rem 0;  */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80% !important; /* reduced height */
+  /* background-color: black; */
+}
+/* Outer container */
+.carouselContainer {
+  position: relative;
+  display: flex;
+  width: max-content;
+}
+
+/* Two identical tracks */
+.track {
+  display: flex;
+  animation: scrollLoop 20s linear infinite;
+  width: fit-content; /* or no fixed width -- let cards decide */
+}
+
+@keyframes scrollLoop {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+/* Cards */
+.card {
+  flex: 0 0 320px;
+  height: 450px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  overflow: hidden;
+  margin-right: 1.5rem;
+  transition: transform 0.4s ease;
+}
+
+.card img {
+  width: 100%;
+  height: 370px;
+  object-fit: cover;
+}
+
+.card h3 {
+  font-family: "Varela Round", sans-serif;
+  color: #001f54;
+  padding: 1rem 0;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* Keyframes – translate one full track width */
+
+
+/* Hover to pause */
+.carouselContainer:hover .track {
+  animation-play-state: paused;
+}
+
+/* Responsive Cards */
+@media (max-width: 768px) {
+  .card {
+    min-width: 180px;
+  }
+
+  .card img {
+    height: 180px;
+  }
+
+  .innerdiv h1 {
+    font-size: 2rem;
+  }
+}
+.third{
+  height: 75vh;
+  width: 100vw;
+  /* border: solid; */
+}
+.subthird{
+
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.subthird h1{
+    font-size: 3rem;
+  font-family: "Varela Round", sans-serif;
+  color: #ff69b4;
+}
+.thirdcards{
+
+  height: 70%;
+  /* background-color: ; */
+}
+.trendCarousel {
+  width: 100%;
+  overflow: hidden;
+   background-color: #f5e1e7;
+  padding: 3rem 0;
+  border-radius: 0 0 20px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Track that moves */
+.trendTrack {
+  display: flex;
+  gap: 1.5rem;
+  animation: scrollTrend 40s linear infinite;
+  width: max-content;
+}
+
+/* Cards */
+.trendcard {
+  flex: 0 0 280px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  overflow: hidden;
+  transition: transform 0.4s ease;
+}
+
+.trendcard img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.trendcard h3 {
+  font-family: "Varela Round", sans-serif;
+  color: #001f54;
+  padding: 1rem 0;
+}
+
+/* Hover */
+.trendcard:hover {
+  transform: scale(1.05);
+}
+
+/* Animation */
+@keyframes scrollTrend {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+
+}
+
+/* Pause on hover */
+.trendCarousel:hover .trendTrack {
+  animation-play-state: paused;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .trendcard {
+    flex: 0 0 200px;
+  }
+  .trendcard img {
+    height: 180px;
+  }
+  .subthird h1 {
+    font-size: 1.8rem;
+  }
+}
+
+
+
+/* ================= BEST SELLING SECTION ================= */
+.bestSelling {
+  background: linear-gradient(to bottom right, #fff, #ffe5ef);
+  width: 100vw;
+  padding: 4rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+   /* align-items: center; */
+}
+
+.bestHeader {
+  margin-bottom: 3rem;
+}
+
+.bestHeader h1 {
+  font-family: "Varela Round", sans-serif;
+  color: #ff69b4;
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.bestHeader p {
+  color: #444;
+  font-size: 1.1rem;
+  font-family: "Varela Round", sans-serif;
+}
+
+/* Responsive product grid */
+.bestGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+  justify-content: center;
+  align-items: start;
+  padding: 1rem;
+}
+
+/* Individual card */
+.bestCard {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 280px;
+}
+
+.bestCard img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-bottom: 2px solid #ff69b4;
+}
+
+.cardDetails {
+  padding: 1rem;
+}
+
+.cardDetails h3 {
+  font-family: "Varela Round", sans-serif;
+  color: #001f54;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  color: #ff69b4;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.cardDetails button {
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cardDetails button:hover {
+  background-color: #001f54;
+  color: #ff69b4;
+}
+
+/* Hover effect for cards */
+.bestCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bestHeader h1 {
+    font-size: 2rem;
+  }
+  .bestCard {
+    width: 240px;
+  }
+}
+/* ================= Scroll To Top Button ================= */
+.scrollTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 2000;
+}
+
+.scrollTop:hover {
+  transform: translateY(-5px);
+  background-color: #ff4fa3;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .scrollTop {
+    width: 45px;
+    height: 45px;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+/* ================= Offers Button ================= */
+.offersButton {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 22px;
+  font-family: "Varela Round", sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  z-index: 2000;
+}
+
+.offersButton:hover {
+  transform: translateY(-4px);
+  background-color: #ff69b4;
+}
+
+/* ================= Modal Styles ================= */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 1100px; /* ✅ Wider modal */
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeUp 0.4s ease-in-out;
+}
+
+.modalContent h2 {
+  font-family: "Varela Round", sans-serif;
+  color: #ff69b4;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+}
+
+/* ================= Grid Gallery ================= */
+.offerGallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* ✅ Card layout */
+  gap: 1.5rem;
+  justify-items: center;
+  align-items: stretch;
+}
+
+.offerGallery img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.offerGallery img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+}
+
+/* ================= Close Button ================= */
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.closeBtn:hover {
+  color: #ff69b4;
+}
+
+/* ================= Animations ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 768px) {
+  .modalContent {
+    padding: 1.2rem;
+    max-width: 95%;
+  }
+
+  .offerGallery {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .offerGallery img {
+    height: auto;
+  }
+}
+/* ================= Unified Section Headers ================= */
+.sectionHeader {
+  text-align: center;
+  background: linear-gradient(90deg, #ffe6f2, #fff, #ffe6f2);
+  padding: 2rem 1rem;
+  border-radius: 20px;
+  margin: 2rem 0;
+  box-shadow: 0 4px 20px rgba(255, 105, 180, 0.15);
+}
+
+.sectionHeader h1 {
+  font-family: "Varela Round", sans-serif;
+  font-weight: 600;
+  font-size: 2.2rem;
+  color: #ff69b4;
+  text-align: center;
+  margin-bottom: 0.6rem;
+}
+
+.sectionHeader p {
+  font-family: "Varela Round", sans-serif;
+  color: #555;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+/* Optional animation for fade-in */
+@keyframes fadeInHeader {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sectionHeader {
+  animation: fadeInHeader 0.8s ease;
+}
+
+/* Responsive header text */
+@media (max-width: 768px) {
+  .sectionHeader h1 {
+    font-size: 1.8rem;
+  }
+  .sectionHeader p {
+    font-size: 0.95rem;
+  }
 }
