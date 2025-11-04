@@ -10,6 +10,8 @@ import Gallery from "./Pages/Gallery";
 import Booking from "./Pages/Booking";
 import Navbar from "./Components/navbar"; // ✅ Make sure file name matches
 import Home from "./Pages/Homepage"; // ✅ Home page import
+import { ToastProvider } from "./ui/Toast";
+import Footer from "./Components/Footer";
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
      
       <div className="Homecontent middle flex-grow-1">
          <Navbar />
+         <ToastProvider />
         <Routes>
           <Route index element={<Home />} />
   <Route path="about" element={<About />} />
@@ -27,6 +30,7 @@ function App() {
   <Route path="gallery" element={<Gallery />} />
   <Route path="booking" element={<Booking />} />
         </Routes>
+        <Footer />
       </div>
     </>
   );

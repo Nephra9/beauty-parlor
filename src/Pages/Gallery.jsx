@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./Gallery.module.css";
+import Modal from "../ui/Modal";
+import { Star, Share2, Download } from "lucide-react";
 
 /*
   Note: this file uses the large imagesData you already have.
@@ -71,115 +73,98 @@ const imagesData = [
 const Gallery = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [selected, setSelected] = useState(null); // selected image object
-  const [imageKey, setImageKey] = useState(0); // used to retrigger CSS animation
+  const [lightboxIndex, setLightboxIndex] = useState(-1); // -1 closed
 
+  const categories = useMemo(() => ["all", ...Array.from(new Set(imagesData.map(i => i.category)))], []);
   const filtered = categoryFilter === "all" ? imagesData : imagesData.filter((i) => i.category === categoryFilter);
-  const sortedImages = [...filtered].sort((a, b) => (sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)));
+  const sortedImages = useMemo(() => [...filtered].sort((a, b) => (sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))), [filtered, sortOrder]);
 
-  const openDetail = (img) => {
-    setSelected(img);
-    setImageKey((k) => k + 1);
-  };
+  const openLightbox = (idx) => setLightboxIndex(idx);
+  const closeLightbox = () => setLightboxIndex(-1);
+  const prev = () => setLightboxIndex((i) => (i - 1 + sortedImages.length) % sortedImages.length);
+  const next = () => setLightboxIndex((i) => (i + 1) % sortedImages.length);
 
-  const closeDetail = () => {
-    setSelected(null);
-  };
-
-  // when switching thumbnails, call openDetail (reuses imageKey)
-  const onThumbClick = (img) => {
-    if (img.id === selected?.id) return;
-    openDetail(img);
-  };
+  useEffect(() => {
+    const onKey = (e) => {
+      if (lightboxIndex < 0) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIndex, sortedImages.length]);
 
   return (
     <div>
-      <nav style={{
-        backgroundColor: '#ff0080',
-        color: 'white',
-        padding: '12px 24px',
-        fontWeight: 'bold',
-        fontSize: '1.2rem',
-        textAlign: 'center',
-        borderRadius: '0 0 10px 10px'
-      }}>
-        Nephra Hair Gallery
-      </nav>
+      <section className={styles.heroHead}>
+        <div className={styles.heroInner}>
+          <h1>Beauty Gallery</h1>
+          <p>Explore our editorials, salon looks, and premium hair inspirations</p>
+        </div>
+      </section>
 
       <div className={styles.container}>
-        <h1 className={styles.title}>Our Best Sellers</h1>
-
         {/* controls */}
-        <div className={styles.controls}>
-          <div className={styles.controlsLeft}>
-            <label className={styles.label}>Category:</label>
-            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-              <option value="all">All</option>
-              <option value="hair">Hair Care</option>
-            </select>
-          </div>
-
-          <div className={styles.sortRight}>
-            {/* removed the select label/options for sort; only button remains */}
-            <button
-              className={styles.sortBtn}
-              onClick={() => setSortOrder((s) => (s === "asc" ? "desc" : "asc"))}
-              aria-label="Toggle sort order"
-            >
-              {sortOrder === "asc" ? "↓ Desc" : "↑ Asc"}
-            </button>
-          </div>
-        </div>
-
-        {/* grid view */}
-        {!selected ? (
-          <div className={styles.grid}>
-            {sortedImages.map((img) => (
-              <div key={img.id} className={styles.card} onClick={() => openDetail(img)}>
-                <img src={img.src} alt={img.name} className={styles.image} />
-                <p className={styles.caption}>{img.name}</p>
-              </div>
+        <div className={styles.controlsPremium}>
+          <div className={styles.chips}>
+            {categories.map((c) => (
+              <button key={c} className={`${styles.chip} ${categoryFilter === c ? styles.chipActive : ""}`} onClick={() => setCategoryFilter(c)}>{c}</button>
             ))}
           </div>
-        ) : (
-          /* viewer: left detail + right square thumbnails */
-          <div className={styles.viewer}>
-            <div className={styles.detailPane}>
-              <button className={styles.backBtn} onClick={closeDetail}>
-                ← Back
-              </button>
+          <button className={styles.sortBtn} onClick={() => setSortOrder((s) => (s === "asc" ? "desc" : "asc"))} aria-label="Toggle sort order">
+            {sortOrder === "asc" ? "Sort: A–Z" : "Sort: Z–A"}
+          </button>
+        </div>
 
-              <div className={styles.detailCard}>
-                {/* key changed on each openDetail to retrigger animation */}
-                <img
-                  key={imageKey}
-                  src={selected.src}
-                  alt={selected.name}
-                  className={`${styles.detailImage} ${styles.animatedImage}`}
-                />
-                <div className={styles.detailContent}>
-                  <h2>{selected.name}</h2>
-                  <p className={styles.description}>{selected.description}</p>
-                </div>
+        {/* grid */}
+        <div className={styles.gridPremium}>
+          {sortedImages.map((img, idx) => (
+            <figure key={img.id} className={styles.cardPremium} onClick={() => openLightbox(idx)}>
+              <img src={img.src} alt={img.name} loading="lazy" className={styles.cardImg} />
+              <figcaption className={styles.cardOverlay}>
+                <div className={styles.cardTitle}>{img.name}</div>
+                <div className={styles.cardSub}>Tap to view</div>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      {/* lightbox */}
+      <Modal open={lightboxIndex >= 0} onClose={closeLightbox}>
+        {lightboxIndex >= 0 && (
+          <div className={styles.lightbox}>
+            <button className={styles.navBtn} onClick={prev} aria-label="Previous">‹</button>
+            <img src={sortedImages[lightboxIndex].src} alt={sortedImages[lightboxIndex].name} className={styles.lightboxImg} />
+            <button className={styles.navBtn} onClick={next} aria-label="Next">›</button>
+            <div className={styles.lightboxMeta}>
+              <div className={styles.lightboxTitle}>{sortedImages[lightboxIndex].name}</div>
+              <div className={styles.lightboxDesc}>{sortedImages[lightboxIndex].description}</div>
+              <div className={styles.ratingRow}>
+                {Array.from({length:5}).map((_,i)=> {
+                  const rating = Math.round((sortedImages[lightboxIndex].rating || 4.8));
+                  return <Star key={i} size={16} className={i < rating ? styles.starFill : styles.starEmpty} />
+                })}
+                <span className={styles.ratingText}>{(sortedImages[lightboxIndex].rating || 4.8).toFixed(1)} • {(100 + (sortedImages[lightboxIndex].id||0)*7).toLocaleString()} reviews</span>
               </div>
+              <div className={styles.lightboxToolbar}>
+                <button className={`${styles.toolBtn}`} onClick={async()=>{
+                  const url = sortedImages[lightboxIndex].src;
+                  try {
+                    if (navigator.share) { await navigator.share({ title: sortedImages[lightboxIndex].name, url }); }
+                    else { await navigator.clipboard.writeText(window.location.origin + '/' + url); }
+                  } catch(e) {}
+                }}><Share2 size={16}/> Share</button>
+                <a className={styles.toolBtn} href={sortedImages[lightboxIndex].src} download>
+                  <Download size={16}/> Download
+                </a>
+              </div>
+              <div className={styles.lightboxCount}>{lightboxIndex + 1} / {sortedImages.length}</div>
             </div>
-
-            <aside className={styles.sidebar}>
-              <div className={styles.thumbGrid}>
-                {sortedImages.map((img) => (
-                  <div
-                    key={img.id}
-                    className={`${styles.thumbSquare} ${selected.id === img.id ? styles.thumbActive : ""}`}
-                    onClick={() => onThumbClick(img)}
-                  >
-                    <img src={img.src} alt={img.name} className={styles.thumbImageSquare} />
-                  </div>
-                ))}
-              </div>
-            </aside>
           </div>
         )}
-      </div>
+      </Modal>
     </div>
   );
 };

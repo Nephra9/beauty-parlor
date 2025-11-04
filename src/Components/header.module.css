@@ -6,7 +6,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 9vh;
+  height: auto;
   background-color: transparent;
   z-index: 1000;
 }
@@ -19,10 +19,12 @@
 
 /* Solid for other pages */
 .solidHeader {
-  background-color: #ff69b4;
+  background-color: var(--bg-elevated);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
 }
+
+.compressed .navbar { padding: 0.3rem 0; }
 
 /* --------------- LOGO & BRAND --------------- */
 .logo {
@@ -32,7 +34,7 @@
 
 .brandName {
   letter-spacing: 1px;
-  color: white;
+  color: var(--text-primary);
   font-family: "Varela Round", sans-serif;
   transition: all 0.3s ease;
 }
@@ -42,17 +44,17 @@
   font-family: "Varela Round", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: white !important;
+  color: var(--text-primary) !important;
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .navLink:hover {
-  color: black !important;
+  color: var(--color-pink-primary) !important;
   transform: scale(1.05);
 }
 
 .active {
-  border-bottom: 2px solid white;
+  border-bottom: 2px solid var(--color-pink-primary);
 }
 
 /* --------------- NAVBAR GENERAL --------------- */
@@ -61,6 +63,38 @@
   padding: 0.6rem 0;
   transition: all 0.3s ease;
 }
+
+.actions { display: flex; gap: 10px; margin-left: auto; }
+
+/* Mega menu */
+.hasMega { position: static; }
+.megaMenu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all .2s ease;
+}
+.megaOpen { opacity: 1; visibility: visible; transform: translateY(0); }
+.megaGrid {
+  max-width: 1120px;
+  margin: 0 auto;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+}
+.megaGrid h6 { margin: 0 0 8px; color: var(--text-muted); font-weight: 600; }
+.megaGrid ul { list-style: none; margin: 0; padding: 0; }
+.megaLink { color: var(--text-primary) !important; display: block; padding: 6px 0; }
+.megaLink:hover { color: var(--color-pink-primary) !important; }
+.megaImage { border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-pink-soft), transparent); min-height: 120px; }
 
 /* --------------- MEDIA QUERIES --------------- */
 
@@ -157,7 +191,7 @@
   }
 
   .solidHeader .navbar-collapse {
-    background-color: #ff69b4;
+    background-color: var(--bg-elevated);
   }
 }
 
@@ -182,7 +216,7 @@
   
 }
 .navbar-collapse .navLink{
-  color: black !important;
+  color: var(--text-primary) !important;
 }
 
 /* ========== Floating header (for Home) ========== */

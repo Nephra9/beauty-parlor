@@ -284,6 +284,7 @@ const Products = () => {
           <div className={styles.imageNavHint}>
             <span>Click to view gallery</span>
           </div>
+          <button className={styles.quickViewBtn} onClick={(e)=>{e.stopPropagation(); openImageModal(product, 0);}}>Quick view</button>
         </div>
 
         <div className={styles.productInfo}>
