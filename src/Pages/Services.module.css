@@ -1,0 +1,35 @@
+.container {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.title {
+  color: #ff69b4;
+  margin-bottom: 30px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+
+.card {
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  width: 250px;
+  border-radius: 15px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(255, 105, 180, 0.3);
+}
+
+.card h3 {
+  color: #ff69b4;
+  margin-bottom: 10px;
+}
