@@ -1,27 +1,52 @@
-.bg-pink {
-  background-color: #ff0080 !important; /* Pink navbar */
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+GB+S:ital,wght@0,100..400;1,100..400&family=Varela+Round&family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap');
+
+
 
 .navbar-nav .nav-link {
-  font-weight: 300;
-  transition: 0.3s;
+  position: relative;
+  color: #fff;
+  font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-.navbar-nav .nav-link:hover {
-  color: #ffe4f1 !important;
-  transform: scale(1.05);
+/* Hover underline animation */
+.navbar-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 50%; /* start from center */
+  bottom: -4px; /* space below text */
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  width: 100%;
+  height: 2px;
+  background-color: #ffe4f1;
+  transition: transform 0.3s ease;
+}
+
+/* When hovering, expand underline */
+.navbar-nav .nav-link:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Keep underline on active nav link */
+.navbar-nav .nav-link.active::after {
+  transform: translateX(-50%) scaleX(1);
+  background-color: #fff;
 }
 .nav-item{
-  font-family:Arial, Helvetica, sans-serif;
- font-weight:500 ;
-}
-.bg-pink {
-  background-color: #ff69b4 !important;
+font-family: "Varela Round", sans-serif !important ;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .navbar-nav .nav-link {
   font-weight: 300;
   transition: 0.3s;
+  font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .navbar-nav .nav-link:hover {
@@ -34,12 +59,18 @@
   border-bottom: 2px solid white;
 }
 .header {
-   background-color: #ff0080 !important;
+  position: fixed;        /* ✅ stays at top of page */
+  top: 0;
+  left: 0;
+  width: 100%;            /* span full width */
+  height: 9vh;
+  background-color: transparent;
+  z-index: 1000;          /* ensures it's above other content */
 }
 
 .navbar {
   background-color: transparent !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); */
 }
 
 .logo {
@@ -53,6 +84,7 @@
 .navLink {
   font-weight: 300;
   transition: 0.3s;
+  
 }
 
 .navLink:hover {
@@ -62,4 +94,28 @@
 
 .active {
   border-bottom: 2px solid white;
+}
+/* Transparent for Home Page */
+.transparentHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 9vh;
+  background-color: rgba(255, 255, 255, 0); /* fully transparent */
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+}
+
+/* Solid for other pages */
+.solidHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 9vh;
+  background-color: #ff69b4; /* or white if you prefer */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: background-color 0.3s ease;
 }
