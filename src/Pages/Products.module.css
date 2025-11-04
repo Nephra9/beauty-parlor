@@ -63,11 +63,13 @@
 /* Category Filter Section */
 .categoryFilterSection {
   margin: 60px 0 40px;
-  position: static; /* removed sticky */
-  background: white;
+  position: sticky;
+  top: 72px;
+  background: rgba(255,255,255,0.8);
   z-index: 100;
-  padding: 20px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #F0F0F0;
+  backdrop-filter: blur(8px);
 }
 
 .topControls {
@@ -320,6 +322,23 @@
   height: 280px;
   flex-shrink: 0;
 }
+
+.quickViewBtn {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  background: #ffffff;
+  color: #212121;
+  border: 1px solid #E0E0E0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.imageContainer:hover .quickViewBtn { opacity: 1; transform: translateX(-50%) translateY(-2px); }
 
 .imageSlider {
   position: relative;
