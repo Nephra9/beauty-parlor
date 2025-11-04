@@ -7,16 +7,16 @@ import styles from "./header.module.css";
 const Header = () => {
   const location = useLocation();
 
-  // Check if current route is home
+  // Check if we’re on the Home page
   const isHomePage = location.pathname === "/";
 
   return (
     <header
       className={`${styles.header} ${
-        isHomePage ? styles.transparentHeader : styles.solidHeader
-      }`}
+        isHomePage ? styles.floatingHeader : styles.fixedHeader
+      } ${isHomePage ? styles.transparentHeader : styles.solidHeader}`}
     >
-      <nav className={`navbar navbar-expand-lg navbar-dark ${styles.navbar}`}>
+      <nav className={`navbar navbar-expand-lg ${styles.navbar}`}>
         <div className="container">
           <NavLink className="navbar-brand d-flex align-items-center" to="/">
             <img
@@ -26,7 +26,7 @@ const Header = () => {
               height="50"
               className={`rounded-circle border border-light me-2 ${styles.logo}`}
             />
-            <span className={`fw-light fs-4 text-white ${styles.brandName}`}>
+            <span className={`fw-light fs-4 ${styles.brandName}`}>
               Beauty Bliss
             </span>
           </NavLink>
