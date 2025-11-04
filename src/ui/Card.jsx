@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Card({ className = "", children, ...props }) {
   return (
-    <div className={`card bb-card ${className}`} {...props}>
+    <div className={`card bb-card ${className}`} {...props}> 
       {children}
     </div>
   );
