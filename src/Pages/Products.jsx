@@ -1,623 +1,642 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import styles from "./Products.module.css";
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { 
+  ShoppingCart, 
+  Star, 
+  X, 
+  ChevronLeft, 
+  ChevronRight,
+  Plus,
+  Minus,
+  Scissors,
+  Crown,
+  Gift,
+  Droplet,
+  Brush,
+  Eye,
+  Wrench,
+  ShoppingBag
+} from 'lucide-react';
+import styles from './Products.module.css';
+
+// Generate mock products: at least 10 per category
+const mkImage = (catId, idx) => `https://picsum.photos/seed/${catId}-${idx}/900/700`;
+
+const generateProducts = () => {
+  const out = [];
+  let id = 100; // start ids at 100 to avoid clashes
+  const templates = {
+    wigs: ['Silky Straight', 'Curly Goddess', 'Lace Front', 'Glam Wave', 'Natural Bob', 'Deep Wave', 'Yaki Straight', 'Mermaid Curls', 'Goddess Bun', 'Vintage Roll'],
+    'hair-bundles': ['Brazilian Body Wave', 'Peruvian Loose Wave', 'Malaysian Straight', 'Indian Remy', 'Raw Virgin', 'Bundles Set A', 'Bundles Set B', 'Silky Bundles', 'Natural Wave', 'Full Head Pack'],
+    'braiding-hair': ['Kanekalon Jumbo', 'Pre-Stretched Braid', 'Senegalese Twist', 'Box Braid Pack', 'Marley Hair', 'Passion Twist', 'Havana Mambo', 'Braiding Set', 'Butterfly Locs', 'Crochet Pack'],
+    'perfume-beauty': ['Elegance Eau', 'Floral Mist', 'Night Bloom', 'Citrus Burst', 'Vanilla Lace', 'Rosewood', 'Amber Glow', 'Ocean Breeze', 'Velvet Musk', 'Signature Scent'],
+    extensions: ['Clip-in 16"', 'Clip-in 18"', 'Clip-in 20"', 'Tape-in 18"', 'Tape-in 20"', 'Weft Extensions', 'Halo Extensions', 'Skin Weft', 'Keratin Tip', 'U-Tip Pack'],
+    'hair-care': ['Argan Oil Treatment', 'Sulfate-Free Shampoo', 'Nourish Conditioner', 'Repair Mask', 'Heat Protect Spray', 'Scalp Serum', 'Detangling Spray', 'Leave-in Cream', 'Growth Oil', 'Protein Treatment'],
+    'beauty-accessories': ['Brush Set', 'Blending Sponge', 'Makeup Mirror', 'Travel Kit', 'Brush Cleaner', 'Brush Roll', 'Compact Case', 'Beauty Blender Pack', 'Eyelash Curler', 'Organizer'],
+    'beauty-tools': ['Professional Dryer', 'Flat Iron 1"', 'Ceramic Curler', 'Styling Brush', 'Heat Brush', 'Volumizer', 'Steamer', 'Trimmer', 'Styling Kit', 'Diffuser'],
+    'lash-kits': ['Luxury Lash Kit A', 'Natural Lash Set', 'Volume Lash Kit', 'Deluxe Lash Pro', 'Starter Lash Set', 'Mega Volume', 'Lash Adhesive Kit', 'Reusables Pack', 'Mini Lash Kit', 'Glamour Lashes'],
+    'sales-deals': ['Summer Bundle', 'Holiday Pack', 'Starter Bundle', 'Pro Bundle', 'Clearance Lot', 'Flash Deal', 'Buy More Save', 'Combo Pack', 'Limited Deal', 'Seasonal Box']
+  };
+
+  Object.keys(templates).forEach(cat => {
+    const names = templates[cat];
+    for (let i = 0; i < names.length; i++) {
+      const title = `${names[i]} ${cat.includes('hair') || cat === 'wigs' ? '' : ''}`.trim();
+      out.push({
+        id: id++,
+        title,
+        price: +(Math.random() * (300 - 20) + 20).toFixed(2),
+        category: cat,
+        images: [mkImage(cat, i*3+1), mkImage(cat, i*3+2), mkImage(cat, i*3+3)],
+        rating: +( (Math.random() * (5 - 4) + 4).toFixed(1) ),
+        reviews: []
+      });
+    }
+  });
+
+  return out;
+};
+
+const mockProducts = generateProducts();
+
+const categories = [
+  { id: 'all', name: 'All Products', icon: ShoppingBag, quote: "Discover Your Perfect Beauty Match" },
+  { id: 'wigs', name: 'Wigs', icon: Scissors, quote: "Transform Your Look Instantly" },
+  { id: 'hair-bundles', name: 'Hair Bundles', icon: Crown, quote: "Luxury That Flows Naturally" },
+  { id: 'braiding-hair', name: 'Braiding Hair', icon: Scissors, quote: "Create Masterpieces With Every Braid" },
+  { id: 'perfume-beauty', name: 'Perfume & Beauty', icon: Droplet, quote: "Scents That Speak Volumes" },
+  { id: 'extensions', name: 'Extensions', icon: Gift, quote: "Instant Length, Timeless Beauty" },
+  { id: 'hair-care', name: 'Hair Care', icon: Brush, quote: "Nourish Your Crown With Care" },
+  { id: 'beauty-accessories', name: 'Accessories', icon: Gift, quote: "Details That Define Beauty" },
+  { id: 'beauty-tools', name: 'Beauty Tools', icon: Wrench, quote: "Professional Results At Home" },
+  { id: 'lash-kits', name: 'Lash Kits', icon: Eye, quote: "Eyes That Captivate Instantly" },
+  { id: 'sales-deals', name: 'Sales & Deals', icon: Star, quote: "Luxury Within Reach" }
+];
 
 const Products = () => {
-  const [quantities, setQuantities] = useState({});
-  const [cartItems, setCartItems] = useState({});
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentImages, setCurrentImages] = useState({});
-
-  // Style-based products with multiple images
-  const styleProducts = [
-    {
-      id: 1,
-      title: "Silky Straight Brazilian Wig",
-      desc: "Premium 100% Brazilian human hair with natural luster and soft texture. Perfect for everyday wear and special occasions.",
-      price: 189.99,
-      originalPrice: 249.99,
-      rating: 4.8,
-      reviewCount: 124,
-      images: [
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1598703247932-23278ac987b6?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["100% Human Hair", "Heat Resistant", "Natural Parting", "Silky Texture"],
-      badge: "BEST SELLER",
-      type: "straight",
-      reviews: [
-        { reviewer: "Sarah M.", text: "Absolutely love this wig! The quality is amazing and it looks so natural." },
-        { reviewer: "Jessica T.", text: "Worth every penny. The hair is so soft and easy to style." },
-        { reviewer: "Emily R.", text: "Best wig I've ever purchased. Looks completely natural!" },
-        { reviewer: "Lisa K.", text: "The hair quality is exceptional. Will definitely buy again." }
-      ]
-    },
-    {
-      id: 2,
-      title: "Curly Goddess Lace Front",
-      desc: "Beautiful defined curls with transparent lace front for natural hairline. Features 360 stretch cap for perfect fit.",
-      price: 219.99,
-      originalPrice: 279.99,
-      rating: 4.9,
-      reviewCount: 89,
-      images: [
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1559628129-67cf63c5d5e3?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["Lace Front", "Pre-plucked", "360% Stretch", "Defined Curls"],
-      badge: "NEW",
-      type: "curly",
-      reviews: [
-        { reviewer: "Maria L.", text: "The curls are perfect and the lace melts beautifully!" },
-        { reviewer: "Taylor R.", text: "Most comfortable wig I've ever worn. Highly recommend!" },
-        { reviewer: "Amanda S.", text: "The lace front is undetectable. Amazing quality!" }
-      ]
-    },
-    {
-      id: 3,
-      title: "Wavy Body Wave Wig",
-      desc: "Luxurious body wave pattern with medium density for everyday wear. Tangle-free and easy to maintain.",
-      price: 159.99,
-      originalPrice: 199.99,
-      rating: 4.6,
-      reviewCount: 67,
-      images: [
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1559628129-67cf63c5d5e3?w=600&h=600&fit=crop"
-      ],
-      features: ["Medium Density", "Tangle Free", "Shedding Resistant", "Body Wave"],
-      badge: "SALE",
-      type: "wavy",
-      reviews: [
-        { reviewer: "Amanda K.", text: "Perfect for daily use. The waves hold up beautifully." },
-        { reviewer: "Nicole P.", text: "Great value for the quality. Very natural looking." },
-        { reviewer: "Rachel G.", text: "Love the texture and how easy it is to maintain." }
-      ]
-    },
-    {
-      id: 4,
-      title: "Kinky Straight Bob",
-      desc: "Chic bob style with kinky straight texture and baby hair included. Lightweight and comfortable for all-day wear.",
-      price: 139.99,
-      originalPrice: 179.99,
-      rating: 4.7,
-      reviewCount: 92,
-      images: [
-        "https://images.unsplash.com/photo-1596944949408-8f22b5ce0cf3?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["Bob Cut", "Baby Hair", "Lightweight", "Kinky Straight"],
-      badge: "TRENDING",
-      type: "kinky",
-      reviews: [
-        { reviewer: "Chloe B.", text: "Love this bob! It's so stylish and easy to maintain." },
-        { reviewer: "Rachel G.", text: "The perfect length and the texture is amazing." },
-        { reviewer: "Sophia M.", text: "Perfect for everyday wear. Very comfortable." }
-      ]
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [quantities, setQuantities] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('');
+  const [cart, setCart] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('bp_cart') || '[]');
+    } catch (e) {
+      return [];
     }
-  ];
+  });
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Color-based products with multiple images
-  const colorProducts = [
-    {
-      id: 5,
-      title: "Blonde Balayage Lace Front",
-      desc: "Stunning blonde balayage on straight hair with HD lace front. Pre-bleached knots for natural look.",
-      price: 269.99,
-      originalPrice: 329.99,
-      rating: 4.8,
-      reviewCount: 73,
-      images: [
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1534528741771-539b5c037d1a?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop"
-      ],
-      features: ["Balayage", "HD Lace", "Pre-bleached", "Blonde"],
-      badge: "LUXURY",
-      type: "blonde",
-      reviews: [
-        { reviewer: "Ashley P.", text: "The color is even more beautiful in person!" },
-        { reviewer: "Kimberly L.", text: "Perfect blend and the lace is undetectable." },
-        { reviewer: "Tiffany R.", text: "The balayage is perfectly done. Looks so natural!" }
-      ]
-    },
-    {
-      id: 6,
-      title: "Brunette Ombre Wig",
-      desc: "Natural brunette to caramel ombre with seamless color transition. Perfect for a sophisticated look.",
-      price: 199.99,
-      originalPrice: 259.99,
-      rating: 4.7,
-      reviewCount: 88,
-      images: [
-        "https://images.unsplash.com/photo-1519699047748-4f0c6c5a2e4a?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1534517029666-978a4d1a5f3c?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop"
-      ],
-      features: ["Ombre", "Natural Brown", "Color Blend", "Brunette"],
-      badge: "POPULAR",
-      type: "brunette",
-      reviews: [
-        { reviewer: "Michelle L.", text: "The color transition is so natural and beautiful!" },
-        { reviewer: "Jennifer K.", text: "Perfect for everyday wear. Love the natural look." }
-      ]
-    },
-    {
-      id: 7,
-      title: "Jet Black Straight Wig",
-      desc: "Rich jet black color with silky straight texture and high shine. Classic look that never goes out of style.",
-      price: 179.99,
-      originalPrice: 229.99,
-      rating: 4.6,
-      reviewCount: 95,
-      images: [
-        "https://images.unsplash.com/photo-1545235612-7a3ded345acf?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1577803645773-f96470509666?w=600&h=600&fit=crop"
-      ],
-      features: ["Jet Black", "High Shine", "Straight", "Classic"],
-      badge: "CLASSIC",
-      type: "black",
-      reviews: [
-        { reviewer: "Nicole R.", text: "The black color is so rich and vibrant!" },
-        { reviewer: "Amanda T.", text: "Perfect for formal occasions. Looks stunning!" }
-      ]
-    },
-    {
-      id: 8,
-      title: "Caramel Highlights Wig",
-      desc: "Warm caramel highlights on brown base for dimensional look. Adds depth and movement to your style.",
-      price: 229.99,
-      originalPrice: 289.99,
-      rating: 4.8,
-      reviewCount: 67,
-      images: [
-        "https://images.unsplash.com/photo-1534517029666-978a4d1a5f3c?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1519699047748-4f0c6c5a2e4a?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1522338147998-18ce32282a6f?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1605497788044-5a32b0a604aa?w=600&h=600&fit=crop"
-      ],
-      features: ["Caramel", "Highlights", "Dimensional", "Warm Tones"],
-      badge: "TRENDING",
-      type: "caramel",
-      reviews: [
-        { reviewer: "Samantha P.", text: "The highlights add so much dimension!" },
-        { reviewer: "Brittany M.", text: "Perfect color for summer. Love it!" }
-      ]
+  const filteredProducts = useMemo(() => {
+    let base = mockProducts;
+    if (selectedCategory !== 'all') base = base.filter(product => product.category === selectedCategory);
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      base = base.filter(p => p.title.toLowerCase().includes(q));
     }
-  ];
+    if (sortOption === 'price-asc') base = base.slice().sort((a,b) => a.price - b.price);
+    if (sortOption === 'price-desc') base = base.slice().sort((a,b) => b.price - a.price);
+    if (sortOption === 'rating-desc') base = base.slice().sort((a,b) => b.rating - a.rating);
+    return base;
+  }, [selectedCategory, searchQuery, sortOption]);
 
-  const updateQuantity = (productId, change) => {
-    setQuantities(prev => ({
-      ...prev,
-      [productId]: Math.max(1, (prev[productId] || 1) + change)
-    }));
+  // persist cart to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('bp_cart', JSON.stringify(cart));
+    } catch (e) {
+      // ignore
+    }
+  }, [cart]);
+
+  const getCategoryQuote = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.quote : "Discover Your Perfect Beauty Match";
   };
 
-  const addToCart = (product) => {
-    const quantity = quantities[product.id] || 1;
-    setCartItems(prev => ({
-      ...prev,
-      [product.id]: (prev[product.id] || 0) + quantity
-    }));
-    
-    // Show subtle feedback
-    const button = document.querySelector(`[data-product="${product.id}"]`);
-    if (button) {
-      const originalText = button.textContent;
-      button.textContent = 'Added to Cart!';
-      button.style.background = 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)';
-      setTimeout(() => {
-        button.textContent = originalText;
-        button.style.background = '';
-      }, 2000);
-    }
-    
-    // Reset quantity
-    setQuantities(prev => ({
-      ...prev,
-      [product.id]: 1
-    }));
+  const handleQuantityChange = (productId, newQuantity) => {
+    setQuantities(prevQuantities => ({ ...prevQuantities, [productId]: newQuantity }));
   };
 
-  const openReviewsModal = (product) => {
+  // stable handlers to avoid re-renders
+  const increaseQuantity = React.useCallback((productId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: (prev[productId] || 1) + 1
+    }));
+  }, []);
+
+  const decreaseQuantity = React.useCallback((productId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(1, (prev[productId] || 1) - 1)
+    }));
+  }, []);
+
+  const formatPrice = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+  const handleAddToCart = React.useCallback((product, qty = 1) => {
+    const quantity = qty || 1;
+    setCart(prev => {
+      const found = prev.find(i => i.id === product.id);
+      let next;
+      if (found) {
+        next = prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i);
+      } else {
+        next = [...prev, { id: product.id, title: product.title, price: product.price, quantity }];
+      }
+      toast.success(`Added ${quantity} × ${product.title} to cart`, { position: 'bottom-right', autoClose: 2500 });
+      return next;
+    });
+    // open cart briefly
+    setIsCartOpen(true);
+  }, []);
+
+  const handleBuyNow = React.useCallback((product, qty = 1) => {
+    // Navigate to product detail view (same as clicking the title)
+    try {
+      navigate(`/products/${product.id}`, { state: product });
+    } catch (e) {
+      // fallback: show demo toast
+      toast.info(`Buy Now is a demo — ${product.title} was not purchased.`, { position: 'bottom-right', autoClose: 3000 });
+    }
+  }, [navigate]);
+
+  const handleViewReviews = (product) => {
     setSelectedProduct(product);
-    setIsModalOpen(true);
+    setCurrentImageIndex(0);
   };
 
-  const closeReviewsModal = () => {
-    setIsModalOpen(false);
+  const closeModal = () => {
     setSelectedProduct(null);
+    setIsImageModalOpen(false);
+    setCurrentImageIndex(0);
   };
 
-  const changeImage = (productId, imageIndex, direction = null) => {
-    const product = [...styleProducts, ...colorProducts].find(p => p.id === productId);
-    if (!product) return;
+  const openImageModal = (product, index = 0) => {
+    setSelectedProduct(product);
+    setCurrentImageIndex(index);
+    setIsImageModalOpen(true);
+  };
 
-    const currentIndex = currentImages[productId] || 0;
-    let newIndex;
-
-    if (direction === 'next') {
-      newIndex = (currentIndex + 1) % product.images.length;
-    } else if (direction === 'prev') {
-      newIndex = (currentIndex - 1 + product.images.length) % product.images.length;
-    } else {
-      newIndex = imageIndex;
+  const nextImage = () => {
+    if (selectedProduct) {
+      setCurrentImageIndex((prev) => 
+        prev === selectedProduct.images.length - 1 ? 0 : prev + 1
+      );
     }
+  };
 
-    setCurrentImages(prev => ({
-      ...prev,
-      [productId]: newIndex
-    }));
+  const prevImage = () => {
+    if (selectedProduct) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? selectedProduct.images.length - 1 : prev - 1
+      );
+    }
   };
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, index) => (
-      <span 
-        key={index} 
-        className={styles.star}
-        style={{ 
-          color: index < Math.floor(rating) ? '#ffb400' : '#e0e0e0'
-        }}
-      >
-        ★
-      </span>
+      <Star
+        key={index}
+        size={16}
+        className={index < Math.floor(rating) ? styles.filledStar : styles.emptyStar}
+        aria-hidden
+      />
     ));
   };
 
-  // Filter products based on search term
-  const filteredStyleProducts = styleProducts.filter(product =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.features.some(feature => 
-      feature.toLowerCase().includes(searchTerm.toLowerCase())
-    ) ||
-    product.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredColorProducts = colorProducts.filter(product =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.features.some(feature => 
-      feature.toLowerCase().includes(searchTerm.toLowerCase())
-    ) ||
-    product.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { y: 30, opacity: 0, scale: 0.9 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const modalVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut"
-      }
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      transition: {
-        duration: 0.3
-      }
-    }
-  };
-
-  const ProductCard = ({ product }) => {
-    const currentImageIndex = currentImages[product.id] || 0;
+  const CategorySection = ({ categoryId, categoryName, products, quote }) => {
+    if (products.length === 0) return null;
 
     return (
-      <motion.div
-        className={styles.card}
-        variants={cardVariants}
-        whileHover={{ y: -8 }}
-      >
-        {product.badge && (
-          <div className={styles.badge}>
-            {product.badge}
-          </div>
-        )}
-        
-        <div className={styles.imageGallery}>
-          <motion.img 
-            src={product.images[currentImageIndex]} 
-            alt={product.title}
-            className={styles.mainImage}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.4 }}
-          />
-          
-          {product.images.length > 1 && (
-            <>
-              <button 
-                className={`${styles.imageNav} ${styles.prev}`}
-                onClick={() => changeImage(product.id, null, 'prev')}
-                aria-label="Previous image"
-              >
-                ‹
-              </button>
-              <button 
-                className={`${styles.imageNav} ${styles.next}`}
-                onClick={() => changeImage(product.id, null, 'next')}
-                aria-label="Next image"
-              >
-                ›
-              </button>
-              
-              <div className={styles.imageThumbnails}>
-                {product.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`${product.title} view ${index + 1}`}
-                    className={`${styles.thumbnail} ${index === currentImageIndex ? styles.active : ''}`}
-                    onClick={() => changeImage(product.id, index)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+      <section className={styles.categorySection} id={categoryId}>
+        <motion.div
+          className={styles.categoryHeader}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <h2 className={styles.categoryTitle}>{categoryName}</h2>
+          <p className={styles.categoryQuote}>"{quote}"</p>
+        </motion.div>
+
+        <div className={styles.productsGrid}>
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              quantity={quantities[product.id] || 1}
+              onIncrease={increaseQuantity}
+              onDecrease={decreaseQuantity}
+              onAddToCart={handleAddToCart}
+              onViewReviews={handleViewReviews}
+              openImageModal={openImageModal}
+            />
+          ))}
         </div>
-        
-        <div className={styles.cardContent}>
-          <h3>{product.title}</h3>
-          <p>{product.desc}</p>
-          
-          <div className={styles.features}>
-            {product.features.map((feature, index) => (
-              <span key={index} className={styles.feature}>
-                {feature}
-              </span>
-            ))}
-          </div>
-          
-          <div className={styles.rating}>
-            <div className={styles.stars}>
-              {renderStars(product.rating)}
-            </div>
-            <span className={styles.ratingCount}>
-              {product.rating} ({product.reviewCount} reviews)
-            </span>
-          </div>
-          
-          <motion.button 
-            className={styles.viewReviewsBtn}
-            onClick={() => openReviewsModal(product)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            View Reviews ({product.reviews.length})
-          </motion.button>
-          
-          <div className={styles.price}>
-            ${product.price}
-            {product.originalPrice && (
-              <span className={styles.originalPrice}>${product.originalPrice}</span>
-            )}
-          </div>
-          
-          <div className={styles.actions}>
-            <div className={styles.quantitySelector}>
-              <button 
-                className={styles.quantityButton}
-                onClick={() => updateQuantity(product.id, -1)}
-                aria-label="Decrease quantity"
-              >
-                −
-              </button>
-              <span className={styles.quantity}>
-                {quantities[product.id] || 1}
-              </span>
-              <button 
-                className={styles.quantityButton}
-                onClick={() => updateQuantity(product.id, 1)}
-                aria-label="Increase quantity"
-              >
-                +
-              </button>
-            </div>
-            
-            <motion.button 
-              className={styles.addToCart}
-              onClick={() => addToCart(product)}
-              whileTap={{ scale: 0.95 }}
-              data-product={product.id}
-            >
-              Add to Cart
-            </motion.button>
-          </div>
-        </div>
-      </motion.div>
+      </section>
     );
   };
 
+  const ProductCard = React.memo(function ProductCard({ product, quantity, onIncrease, onDecrease, onAddToCart, onViewReviews, openImageModal }) {
+    const [hoverIndex, setHoverIndex] = useState(0);
+
+    return (
+      <motion.div
+        className={styles.productCard}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.28 }}
+        whileHover={{ y: -6 }}
+      >
+        <div
+          className={styles.imageContainer}
+          onMouseEnter={() => setHoverIndex(1)}
+          onMouseLeave={() => setHoverIndex(0)}
+          onClick={() => openImageModal(product, 0)}
+        >
+          <div className={styles.imageSlider}>
+            {product.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`${product.title} view ${index + 1}`}
+                loading="lazy"
+                className={`${styles.productImage} ${index === hoverIndex ? styles.activeImage : ''}`}
+              />
+            ))}
+          </div>
+
+          {product.originalPrice && <div className={styles.saleBadge}>SALE</div>}
+
+          <div className={styles.imageNavHint}>
+            <span>Click to view gallery</span>
+          </div>
+        </div>
+
+        <div className={styles.productInfo}>
+          <h3 className={styles.productTitle}><Link to={`/products/${product.id}`} state={product} className={styles.productLink}>{product.title}</Link></h3>
+
+          <div className={styles.priceSection}>
+            {product.originalPrice ? (
+              <>
+                <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
+                <span className={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
+              </>
+            ) : (
+              <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
+            )}
+          </div>
+
+          <div className={styles.ratingSection}>
+            <div className={styles.stars}>{renderStars(product.rating)}</div>
+            <span className={styles.ratingValue}>({product.rating})</span>
+          </div>
+
+          <div className={styles.quantitySection}>
+            <span className={styles.quantityLabel}>Quantity:</span>
+            <div className={styles.quantityControls} onClick={(e) => e.stopPropagation()}>
+              <button className={styles.quantityButton} onClick={(e) => onDecrease(product.id, e)}>
+                <Minus size={14} />
+              </button>
+              <span className={styles.quantityValue}>{quantity}</span>
+              <button className={styles.quantityButton} onClick={(e) => onIncrease(product.id, e)}>
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <motion.button className={styles.addToCartButton} onClick={() => onAddToCart(product, quantity)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <ShoppingCart size={18} />
+              Add to Cart
+            </motion.button>
+
+            <motion.button className={styles.reviewsButton} onClick={() => onViewReviews(product)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              View Reviews
+            </motion.button>
+          </div>
+
+          <motion.div style={{marginTop:12}}>
+            <motion.button className={`${styles.buyNowButton} ${styles.buyNowFull}`} onClick={() => handleBuyNow(product, quantity)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              Buy Now
+            </motion.button>
+          </motion.div>
+        </div>
+      </motion.div>
+    );
+  });
+  ProductCard.displayName = 'ProductCard';
+
   return (
     <div className={styles.container}>
-      {/* Header Section */}
-      <div className={styles.header}>
-        <motion.h1 
-          className={styles.title}
-          initial={{ opacity: 0, y: -30 }}
+      {/* Hero Section */}
+      <section className={styles.heroSection}>
+        <motion.div
+          className={styles.heroContent}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          transition={{ duration: 0.8 }}
         >
-          Luxury Wig Collection
-        </motion.h1>
-        <motion.p 
-          className={styles.subtitle}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-        >
-          Discover premium quality wigs with multiple styling options and natural looks
-        </motion.p>
-        
-        {/* Search Bar */}
-        <motion.div 
-          className={styles.searchContainer}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-        >
-          <div className={styles.searchIcon}>🔍</div>
-          <input
-            type="text"
-            placeholder="Search wigs by style, color, or features..."
-            className={styles.searchBar}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <h1 className={styles.heroTitle}>Elevate Your Beauty Journey</h1>
+          <p className={styles.heroSubtitle}>
+            Discover premium beauty products crafted for the modern, sophisticated you. 
+            Where luxury meets self-expression.
+          </p>
         </motion.div>
-      </div>
+      </section>
 
-      {/* Style-Based Products Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-      >
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Popular Styles</h2>
-          <p className={styles.sectionSubtitle}>Explore our most loved wig styles and textures</p>
-          <a href="#all-styles" className={styles.viewAll}>View All Styles</a>
+      {/* Category Filter */}
+      <section className={styles.categoryFilterSection}>
+        <div className={styles.topControls}>
+          <div className={styles.searchWrap}>
+            <input
+              className={styles.searchInput}
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className={styles.sortWrap}>
+            <select className={styles.sortSelect} value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+              <option value="">Sort</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+              <option value="rating-desc">Top Rated</option>
+            </select>
+          </div>
         </div>
-        
-        <motion.div 
-          className={styles.grid}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {filteredStyleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </motion.div>
-      </motion.section>
-
-      {/* Color-Based Products Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
-      >
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Hair Colors</h2>
-          <p className={styles.sectionSubtitle}>Find your perfect shade from our color collection</p>
-          <a href="#all-colors" className={styles.viewAll}>View All Colors</a>
+        <div className={styles.categoryScroll}>
+          {categories.map((category) => {
+            const Icon = category.icon;
+            // find first product image for this category as preview
+            const preview = mockProducts.find(p => p.category === category.id)?.images?.[0] || '';
+            return (
+              <motion.button
+                key={category.id}
+                className={`${styles.categoryButton} ${selectedCategory === category.id ? styles.activeCategory : ''}`}
+                onClick={() => setSelectedCategory(category.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className={styles.categoryFlip}>
+                  <div className={styles.categoryFlipInner}>
+                    <div className={styles.categoryFlipFront}>
+                      <Icon size={20} />
+                    </div>
+                    <div className={styles.categoryFlipBack}>
+                      {preview ? (
+                        <img src={preview} alt={`${category.name} preview`} className={styles.categoryFlipImage} />
+                      ) : (
+                        <Icon size={20} />
+                      )}
+                      <div className={styles.categoryOverlay}>{category.name}</div>
+                    </div>
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
-        
-        <motion.div 
-          className={styles.grid}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {filteredColorProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </motion.div>
-      </motion.section>
+      </section>
 
-      {/* Reviews Modal */}
+      {/* All Products View */}
+      {selectedCategory === 'all' && (
+        <div className={styles.allCategories}>
+          {categories.filter(cat => cat.id !== 'all').map(category => (
+            <CategorySection
+              key={category.id}
+              categoryId={category.id}
+              categoryName={category.name}
+              products={mockProducts.filter(p => p.category === category.id)}
+              quote={category.quote}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Single Category View */}
+      {selectedCategory !== 'all' && (
+        <CategorySection
+          categoryId={selectedCategory}
+          categoryName={categories.find(cat => cat.id === selectedCategory)?.name || ''}
+          products={filteredProducts}
+          quote={getCategoryQuote(selectedCategory)}
+        />
+      )}
+
+      {/* Image Modal */}
       <AnimatePresence>
-        {isModalOpen && selectedProduct && (
-          <motion.div 
+        {isImageModalOpen && selectedProduct && (
+          <motion.div
             className={styles.modalOverlay}
-            onClick={closeReviewsModal}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={closeModal}
           >
-            <motion.div 
-              className={styles.modalContent}
+            <motion.div
+              className={styles.imageModalContent}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
             >
-              <div className={styles.modalHeader}>
-                <h2>{selectedProduct.title} - Reviews</h2>
-                <button 
-                  className={styles.closeButton}
-                  onClick={closeReviewsModal}
-                  aria-label="Close reviews"
-                >
-                  ×
-                </button>
-              </div>
-              
-              <div className={styles.modalRating}>
-                <div className={styles.modalStars}>
-                  {renderStars(selectedProduct.rating)}
-                </div>
-                <span className={styles.modalRatingText}>
-                  {selectedProduct.rating} out of 5 · {selectedProduct.reviewCount} reviews
-                </span>
-              </div>
-              
-              <div className={styles.reviewsList}>
-                {selectedProduct.reviews.map((review, index) => (
-                  <div key={index} className={styles.modalReview}>
-                    <div className={styles.modalReviewHeader}>
-                      <span className={styles.modalReviewer}>{review.reviewer}</span>
-                      <div className={styles.modalReviewStars}>
-                        {renderStars(selectedProduct.rating)}
-                      </div>
-                    </div>
-                    <p className={styles.modalReviewText}>"{review.text}"</p>
+              <button className={styles.closeButton} onClick={closeModal}>
+                <X size={24} />
+              </button>
+
+              <div className={styles.imageModalBody}>
+                <div className={styles.mainImageContainer}>
+                  <img
+                    src={selectedProduct.images[currentImageIndex]}
+                    alt={selectedProduct.title}
+                    className={styles.modalMainImage}
+                  />
+                  
+                  <button className={styles.navButtonLeft} onClick={prevImage}>
+                    <ChevronLeft size={32} />
+                  </button>
+                  <button className={styles.navButtonRight} onClick={nextImage}>
+                    <ChevronRight size={32} />
+                  </button>
+
+                  <div className={styles.imageCounter}>
+                    {currentImageIndex + 1} / {selectedProduct.images.length}
                   </div>
-                ))}
-              </div>
-              
-              <div className={styles.modalActions}>
-                <motion.button 
-                  className={styles.continueShopping}
-                  onClick={closeReviewsModal}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Continue Shopping
-                </motion.button>
+                </div>
+
+                <div className={styles.modalThumbnails}>
+                  {selectedProduct.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Thumbnail ${index + 1}`}
+                      className={`${styles.modalThumbnail} ${
+                        index === currentImageIndex ? styles.activeModalThumbnail : ''
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    />
+                  ))}
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Review Modal */}
+      <AnimatePresence>
+        {selectedProduct && !isImageModalOpen && (
+          <motion.div
+            className={styles.modalOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+          >
+            <motion.div
+              className={styles.modalContent}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className={styles.closeButton} onClick={closeModal}>
+                <X size={24} />
+              </button>
+
+              <div className={styles.modalBody}>
+                <div className={styles.modalImages}>
+                  <div className={styles.mainImage}>
+                    <img
+                      src={selectedProduct.images[0]}
+                      alt={selectedProduct.title}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.modalDetails}>
+                  <h2>{selectedProduct.title}</h2>
+                  <div className={styles.modalRating}>
+                    <div className={styles.stars}>
+                      {renderStars(selectedProduct.rating)}
+                    </div>
+                    <span>Average Rating: {selectedProduct.rating}/5</span>
+                  </div>
+
+                  <div className={styles.reviewsSection}>
+                    <h3>Customer Reviews</h3>
+                    {selectedProduct.reviews.length > 0 ? (
+                      selectedProduct.reviews.map((review, index) => (
+                        <div key={index} className={styles.reviewItem}>
+                          <div className={styles.reviewHeader}>
+                            <strong>{review.user}</strong>
+                            <div className={styles.stars}>
+                              {renderStars(review.rating)}
+                            </div>
+                          </div>
+                          <p>{review.comment}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No reviews yet. Be the first to review!</p>
+                    )}
+                  </div>
+
+                  <div className={styles.modalQuantity}>
+                    <span>Quantity:</span>
+                    <div className={styles.quantityControls}>
+                      <button 
+                        className={styles.quantityButton}
+                        onClick={(e) => decreaseQuantity(selectedProduct.id, e)}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className={styles.quantityValue}>
+                        {quantities[selectedProduct.id] || 1}
+                      </span>
+                      <button 
+                        className={styles.quantityButton}
+                        onClick={(e) => increaseQuantity(selectedProduct.id, e)}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <motion.button
+                    className={styles.addToCartButton}
+                    onClick={() => handleAddToCart(selectedProduct)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ShoppingCart size={18} />
+                    Add to Cart - {formatPrice(selectedProduct.price)}
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <ToastContainer />
+
+      {/* Floating Cart Button & Cart Modal */}
+      <div className={styles.floatingCartWrap}>
+        <button className={styles.floatingCartButton} onClick={() => setIsCartOpen(true)} aria-label="Open cart">
+          <ShoppingCart size={20} />
+          <span className={styles.cartCount}>{cart.reduce((s,i) => s + i.quantity, 0)}</span>
+        </button>
+      </div>
+
+      {isCartOpen && (
+        <div className={styles.modalOverlay} onClick={() => setIsCartOpen(false)}>
+          <div className={styles.cartModal} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeButton} onClick={() => setIsCartOpen(false)}><X size={20} /></button>
+            <div style={{padding:20}}>
+              <h3>Cart</h3>
+              {cart.length === 0 ? (
+                <p>Your cart is empty.</p>
+              ) : (
+                <div className={styles.cartList}>
+                  {cart.map(item => (
+                    <div key={item.id} className={styles.cartItem}>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <div className={styles.cartItemMeta}>{item.quantity} × {formatPrice(item.price)}</div>
+                      </div>
+                      <div>
+                        <strong>{formatPrice(item.price * item.quantity)}</strong>
+                      </div>
+                    </div>
+                  ))}
+                  <div className={styles.cartTotal}>
+                    <strong>Total:</strong>
+                    <strong>{formatPrice(cart.reduce((s,i) => s + i.price * i.quantity, 0))}</strong>
+                  </div>
+                  <div style={{marginTop:12}}>
+                    <button className={styles.addToCartButton} onClick={() => { setCart([]); try { localStorage.removeItem('bp_cart'); } catch (e) {} toast.info('Checkout is a demo — cart cleared.'); setIsCartOpen(false); }}>Proceed to Checkout</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
