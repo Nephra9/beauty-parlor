@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+GB+S:ital,wght@0,100..400;1,100..400&family=Varela+Round&family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap');
+/* ================= HOME SECTION ================= */
 .homeContainer {
   background-color: #fffafc;
   min-height: 70vh;
@@ -27,4 +29,118 @@
   background-color: #ff69b4;
   color: white;
   transform: translateY(-3px);
+}
+
+/* ================= HERO SECTION ================= */
+.mainpic {
+  position: relative;
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* White background container (holds the image) */
+.imagediv {
+  background-color: white;
+  height: 100%;
+  width: 100%;
+}
+
+/* Hero image */
+.heroimage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Changed from fill → keeps proper proportions */
+  display: block;
+}
+
+/* Pink overlay layer */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 105, 180, 0.35);
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Overlay text content */
+.textContent {
+  color: white;
+  max-width: 700px;
+  padding: 20px;
+  /* background: rgba(0, 0, 0, 0.35); */
+  border-radius: 20px;
+}
+
+.textContent h1 {
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+  font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.textContent p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.textContent button {
+  background-color: #fff;
+  color: #ff69b4;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.textContent button:hover {
+  background-color: #ff69b4;
+  color: white;
+  transform: translateY(-3px);
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+@media (max-width: 768px) {
+  .textContent h1 {
+    font-size: 2rem;
+  }
+
+  .textContent p {
+    font-size: 1rem;
+  }
+
+  .textContent {
+    padding: 15px;
+  }
+
+  .mainpic {
+    height: 70vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .textContent h1 {
+    font-size: 1.6rem;
+  }
+
+  .textContent p {
+    font-size: 0.9rem;
+  }
+
+  .mainpic {
+    height: 60vh;
+  }
 }

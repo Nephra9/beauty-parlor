@@ -1,1 +1,26 @@
+/* Hide both vertical and horizontal scrollbars */
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
 
+
+
+/* Optional: still allow internal components to scroll if needed */
+.scrollable {
+  overflow: auto;
+}
+
+.scrollable::-webkit-scrollbar {
+  display: none;
+}
+/* in App.css */
+.navbar-nav .nav-link {
+  font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffe4f1 !important;
+  transform: scale(1.05);
+}
