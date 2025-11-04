@@ -1,7 +1,7 @@
 :root {
-  --theme-color: #ff0080;
-  --button-color: #ff69b4;
-  --overlay-color: rgba(255, 105, 180, 0.35);
+  --theme-color: var(--color-pink-primary);
+  --button-color: var(--color-pink-primary);
+  --overlay-color: rgba(255, 45, 140, 0.12);
 }
 
 .container {
@@ -9,98 +9,40 @@
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-family: var(--font-body);
 }
 
 /* Title */
-.title {
-  color: var(--theme-color);
-  margin-bottom: 18px;
-  font-size: 1.8rem;
-  font-weight: 700;
-  text-align: center;
-}
+/* Hero head */
+.heroHead { background: linear-gradient(135deg, var(--color-pink-soft), transparent); }
+.heroInner { max-width: 1120px; margin: 0 auto; padding: 32px 16px; text-align: center; }
+.heroInner h1 { margin: 0; font-family: var(--font-heading); }
+.heroInner p { margin: 8px 0 0; color: var(--text-muted); }
 
 /* Controls */
-.controls {
+.controlsPremium {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
   margin-bottom: 22px;
-  padding: 0 8px;
-  background: var(--overlay-color);
-  border-radius: 12px;
-  padding: 12px;
 }
 
-.controlsLeft {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.label {
-  font-weight: 600;
-  color: var(--theme-color);
-}
-
-/* dropdown */
-select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 2px solid var(--theme-color);
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: 0.2s;
-}
-
-select:hover {
-  background-color: var(--overlay-color);
-}
+/* chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 8px 14px; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--text-muted) 20%, transparent); background: var(--bg-elevated); cursor: pointer; }
+.chipActive { background: var(--color-pink-soft); border-color: var(--button-color); color: var(--button-color); }
 
 /* Grid of cards */
-.grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  justify-content: center;
-}
-
-.card {
-  width: 220px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border 0.22s ease;
-  border: 2px solid transparent;
-}
-
-.card:hover {
-  transform: translateY(-6px);
-  border-color: var(--button-color);
-  box-shadow: 0 10px 26px rgba(255, 105, 180, 0.3);
-}
-
-.image {
-  width: 200px;
-  height: 240px;
-  object-fit: cover;
-  display: block;
-}
-
-/* caption under grid cards */
-.caption {
-  padding: 12px 10px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #222;
-  text-align: center;
-}
+/* premium grid */
+.gridPremium { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.cardPremium { position: relative; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); cursor: zoom-in; }
+.cardImg { width: 100%; height: 280px; object-fit: cover; display: block; transition: transform .35s ease; }
+.cardPremium:hover .cardImg { transform: scale(1.05); }
+.cardOverlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: start; justify-content: end; background: linear-gradient(180deg, transparent, rgba(0,0,0,.55)); color: #fff; padding: 12px; opacity: 0; transition: opacity .2s ease; }
+.cardPremium:hover .cardOverlay { opacity: 1; }
+.cardTitle { font-weight: 700; }
+.cardSub { opacity: .85; font-size: 12px; }
 
 /* Viewer layout */
 .viewer {
@@ -270,3 +212,23 @@ select:hover {
   60% { opacity: 1; transform: scale(1.02) translateY(-2px); filter: blur(0); }
   100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
+
+/* Lightbox */
+.lightbox { display: grid; grid-template-columns: auto; justify-items: center; gap: 12px; }
+.lightboxImg { max-width: min(92vw, 1000px); max-height: 70vh; border-radius: 12px; box-shadow: var(--shadow-md); object-fit: contain; }
+.lightboxMeta { display: grid; gap: 4px; text-align: center; }
+.lightboxTitle { font-weight: 700; }
+.lightboxDesc { color: var(--text-muted); font-size: 14px; }
+.lightboxCount { color: var(--text-muted); font-size: 12px; }
+.navBtn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,.5); color:#fff; border:none; width:36px; height:36px; border-radius:999px; cursor:pointer; display:grid; place-items:center; }
+.navBtn:first-of-type { left: 12px; }
+.navBtn:last-of-type { right: 12px; }
+
+/* Ratings & toolbar */
+.ratingRow { display:flex; align-items:center; gap:6px; justify-content:center; margin-top:4px; }
+.starFill { color: var(--color-rose-deep); }
+.starEmpty { color: color-mix(in oklab, var(--text-muted) 60%, transparent); }
+.ratingText { color: var(--text-muted); font-size: 12px; margin-left: 4px; }
+.lightboxToolbar { display:flex; justify-content:center; gap:8px; margin-top:8px; }
+.toolBtn { display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; border:1px solid color-mix(in oklab, var(--text-muted) 20%, transparent); background: var(--bg-elevated); color: var(--text-primary); text-decoration:none; }
+.toolBtn:hover { background: color-mix(in oklab, var(--color-pink-soft) 30%, transparent); }

@@ -40,6 +40,13 @@
   height: 100vh;
   overflow: hidden;
 }
+/* Hero carousel */
+.heroCarousel { position: absolute; inset: 0; }
+.heroSlide { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease; }
+.heroSlideActive { opacity: 1; }
+.heroControls { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.dot { width: 10px; height: 10px; border-radius: 999px; background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.8); }
+.dotActive { background: var(--color-pink-primary); border-color: var(--color-pink-primary); }
 
 .imagediv {
   background-color: white;
@@ -198,7 +205,7 @@
 /* Two identical tracks */
 .track {
   display: flex;
-  animation: scrollLoop 20s linear infinite;
+  animation: scrollLoop 24s linear infinite;
   width: fit-content; /* or no fixed width -- let cards decide */
 }
 
@@ -207,7 +214,7 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
   }
 }
 
@@ -301,7 +308,7 @@
 .trendTrack {
   display: flex;
   gap: 1.5rem;
-  animation: scrollTrend 40s linear infinite;
+  animation: scrollTrend 48s linear infinite;
   width: max-content;
 }
 
@@ -336,13 +343,25 @@
 /* Animation */
 @keyframes scrollTrend {
   0% {
-    transform: translateX(-50%);
+    transform: translateX(0);
   }
   100% {
-    transform: translateX(0);
+    transform: translateX(-100%);
   }
 
 }
+
+/* Brand marquee */
+.marquee { display:flex; overflow:hidden; white-space:nowrap; background: var(--bg-elevated); border-top:1px solid color-mix(in oklab, var(--text-muted) 18%, transparent); border-bottom:1px solid color-mix(in oklab, var(--text-muted) 18%, transparent); }
+.marqueeInner { display:flex; gap:32px; padding:12px 0; animation: marquee 26s linear infinite; }
+.marqueeInner span { color: var(--text-muted); letter-spacing:.08em; }
+@keyframes marquee { from{ transform: translateX(0);} to { transform: translateX(-50%);} }
+
+/* Counters */
+.counters { max-width:1120px; margin:48px auto; display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.counterCard { text-align:center; background:var(--bg-elevated); border:1px solid color-mix(in oklab, var(--text-muted) 18%, transparent); border-radius:16px; padding:24px; box-shadow: var(--shadow-sm); }
+.counterValue { font-size:28px; font-weight:800; color: var(--color-pink-primary); }
+.counterLabel { color: var(--text-muted); }
 
 /* Pause on hover */
 .trendCarousel:hover .trendTrack {
@@ -375,6 +394,35 @@
   justify-content: center; 
    /* align-items: center; */
 }
+/* Trust badges */
+.badges { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1120px; margin: 32px auto 0; }
+.badge { background: var(--bg-elevated); border: 1px solid color-mix(in oklab, var(--text-muted) 18%, transparent); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-sm); }
+.badgeTitle { font-weight: 600; }
+.badgeText { color: var(--text-muted); font-size: 14px; }
+
+/* Featured collections */
+.featured { max-width: 1120px; margin: 48px auto 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.featureCard { position: relative; overflow: hidden; border-radius: 16px; box-shadow: var(--shadow-md); }
+.featureCard img { width: 100%; height: 360px; object-fit: cover; display: block; filter: saturate(1.05); }
+.featureOverlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.45)); display: flex; align-items: end; padding: 16px; color: #fff; }
+.featureOverlay h3 { margin: 0; }
+.featureOverlay p { margin: 4px 0 0; opacity: .9; }
+
+/* Testimonials */
+.testimonials { background: var(--bg-surface); padding: 48px 16px; }
+.testimonialGrid { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.testimonialCard { background: var(--bg-elevated); border: 1px solid color-mix(in oklab, var(--text-muted) 18%, transparent); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); }
+.testimonialName { font-weight: 600; margin-top: 8px; }
+.testimonialRole { color: var(--text-muted); font-size: 13px; }
+
+/* Editorial */
+.editorial { padding: 32px 16px; }
+.editorialGrid { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+.editorCard { position: relative; overflow: hidden; border-radius: 16px; box-shadow: var(--shadow-sm); background: var(--bg-elevated); }
+.editorCard img { width: 100%; height: 240px; object-fit: cover; display: block; }
+.editorMeta { padding: 12px; }
+.editorMeta h4 { margin: 0 0 6px; }
+.editorMeta p { margin: 0; color: var(--text-muted); font-size: 14px; }
 
 .bestHeader {
   margin-bottom: 3rem;
@@ -695,4 +743,11 @@
   .sectionHeader p {
     font-size: 0.95rem;
   }
+}
+/* New responsive adjustments */
+@media (max-width: 768px) {
+  .badges { grid-template-columns: 1fr 1fr; }
+  .featured { grid-template-columns: 1fr; }
+  .testimonialGrid { grid-template-columns: 1fr; }
+  .editorialGrid { grid-template-columns: 1fr; }
 }
