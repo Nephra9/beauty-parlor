@@ -63,13 +63,53 @@
 /* Category Filter Section */
 .categoryFilterSection {
   margin: 60px 0 40px;
-  position: sticky;
-  top: 0;
+  position: static; /* removed sticky */
   background: white;
   z-index: 100;
   padding: 20px 0;
   border-bottom: 1px solid #F0F0F0;
-  backdrop-filter: blur(10px);
+}
+
+.topControls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px 12px;
+  max-width: 1400px;
+  margin: 0 auto 8px;
+}
+
+.searchWrap {
+  flex: 1 1 60%;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #F0F0F0;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  color: #212121; /* ensure text is visible */
+}
+
+.sortWrap {
+  flex: 0 0 180px;
+}
+
+.sortSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #F0F0F0;
+  background: #fff;
+  color: #212121; /* ensure text is visible */
+}
+
+.searchInput::placeholder,
+.sortSelect::placeholder {
+  color: #9b9b9b;
 }
 
 .categoryScroll {
@@ -129,48 +169,129 @@
 
 /* Category Sections */
 .categorySection {
-  margin: 80px 0;
-  padding: 40px 0;
-  scroll-margin-top: 100px;
+  /* Reduced vertical spacing for a tighter layout - no full-section background so banner stands out */
+  margin: 28px 0;
+  padding: 8px 0 20px 0;
+  scroll-margin-top: 80px;
+  background: transparent;
 }
 
 .categoryHeader {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 8px;
   padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .categoryTitle {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: 1.8rem;
+  font-weight: 800;
   color: #212121;
-  margin-bottom: 16px;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
 }
 
 .categoryQuote {
-  font-size: 1.25rem;
-  color: #F6B6C8;
-  font-style: italic;
-  font-weight: 500;
-  max-width: 500px;
+  /* Styled like the hero: soft pink banner with rounded shape */
+  font-size: 1.05rem;
+  color: #6b2b3b;
+  font-style: normal;
+  font-weight: 600;
+  max-width: 820px;
   margin: 0 auto;
   line-height: 1.5;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, rgba(252,228,236,0.6) 0%, rgba(249,217,224,0.6) 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(246,182,200,0.35);
+  box-shadow: 0 6px 18px rgba(246,182,200,0.08);
+}
+
+/* Banner used in the header: centered, rounded, pink panel similar to the reference */
+.categoryBanner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(90deg, rgba(255,196,208,0.95) 0%, rgba(255,172,196,0.95) 100%);
+  border-radius: 14px;
+  box-shadow: 0 8px 26px rgba(249, 196, 206, 0.15);
+  border: 1px solid rgba(246,182,200,0.35);
+}
+
+.categoryBanner .categoryTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0;
+}
+
+.categoryBanner .categoryQuote {
+  background: rgba(255,255,255,0.95);
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #8b2b3c;
+  font-weight: 700;
+  font-style: normal;
+  margin: 0;
+  box-shadow: 0 4px 12px rgba(246,182,200,0.06);
+}
+
+/* Buy Now button style */
+.buyNowButton {
+  background: linear-gradient(180deg,#ff6fa3,#ff4d88);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buyNowButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255,77,136,0.18);
+}
+
+/* Full-width buy now button used below the primary button row */
+.buyNowFull {
+  width: 100%;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.98rem;
+  box-shadow: 0 8px 24px rgba(255,77,136,0.08);
+}
+
+/* Make the button stack nicely on small screens */
+@media (max-width: 480px) {
+  .buttonGroup {
+    gap: 10px;
+    flex-direction: row;
+  }
+
+  .buyNowFull {
+    margin-top: 10px;
+  }
 }
 
 .allCategories {
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 40px; /* reduce large vertical spacing between categories */
 }
 
 /* Products Grid */
 .productsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
-  padding: 20px 0;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 22px; /* tighter grid spacing */
+  padding: 12px 0;
 }
 
 /* Product Card */
@@ -219,6 +340,98 @@
 
 .productImage.activeImage {
   opacity: 1;
+}
+
+/* Flip card for image preview */
+.categoryFlip {
+  perspective: 800px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.categoryFlipInner {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+}
+
+.categoryButton:hover .categoryFlipInner {
+  transform: rotateY(180deg);
+}
+
+.categoryFlipFront,
+.categoryFlipBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.categoryFlipFront {
+  background: transparent;
+}
+
+.categoryFlipBack {
+  transform: rotateY(180deg);
+  overflow: hidden;
+}
+
+/* Ensure lucide-react SVG icons are visible and centered inside the flip */
+.categoryFlipFront svg,
+.categoryFlipBack svg {
+  /* Use currentColor so icons follow text color, and set a friendly default */
+  color: #d95f88; /* soft pink for inactive icons */
+  stroke: currentColor;
+  width: 26px !important;
+  height: 26px !important;
+}
+
+/* Make the front face clearly visible even when background is white */
+.categoryFlipFront {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* When category is active, make the icon contrast well */
+.categoryButton.activeCategory .categoryFlipFront svg {
+  color: #ffffff; /* white icon on pink active background */
+}
+
+/* Backface overlay tweak to ensure text remains readable */
+.categoryFlipBack .categoryOverlay {
+  bottom: 8px;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+}
+
+.categoryFlipImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.categoryOverlay {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(33,33,33,0.8);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
 }
 
 .imageContainer:hover .productImage:nth-child(1) { opacity: 0; }
@@ -278,6 +491,9 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.productLink { color: inherit; text-decoration: none }
+.productLink:hover { text-decoration: underline }
 
 .priceSection {
   display: flex;
@@ -1009,4 +1225,72 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #f4a5bb;
+}
+
+/* Floating Cart */
+.floatingCartWrap {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1200;
+}
+
+.floatingCartButton {
+  background: linear-gradient(180deg,#F6B6C8,#F4A5BB);
+  border: none;
+  color: #212121;
+  padding: 12px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 8px 24px rgba(246,182,200,0.25);
+  cursor: pointer;
+}
+
+.cartCount {
+  background: #212121;
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* Cart Modal (re-uses .modalOverlay) */
+.cartModal {
+  background: #fff;
+  border-radius: 16px;
+  width: 380px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.cartList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cartItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #F5F5F5;
+}
+
+.cartItemMeta {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.cartTotal {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #F0F0F0;
+  margin-top: 8px;
 }

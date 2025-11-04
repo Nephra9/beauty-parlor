@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,223 +10,111 @@ import {
   ChevronLeft, 
   ChevronRight,
   Plus,
-  Minus
+  Minus,
+  Scissors,
+  Crown,
+  Gift,
+  Droplet,
+  Brush,
+  Eye,
+  Wrench,
+  ShoppingBag
 } from 'lucide-react';
-import styles from './products.module.css';
+import styles from './Products.module.css';
 
-// Updated product images with real URLs
-const mockProducts = [
-  // Wigs
-  {
-    id: 1,
-    title: "Silky Straight Human Hair Wig",
-    price: 249.99,
-    category: "wigs",
-    images: [
-      "https://unsplash.com/photos/3-bN6yxk1Y8",
-      "https://unsplash.com/photos/hair-wig-product-flat-lay-1",
-      "https://unsplash.com/photos/vetchCBD-hair-product-example",
-      "https://unsplash.com/photos/2czK-hair-extensions"
-    ],
-    rating: 4.8,
-    reviews: [
-      { user: "Sarah M.", rating: 5, comment: "Absolutely love this wig! So natural and comfortable." },
-      { user: "Jessica T.", rating: 4, comment: "Great quality, slight shedding but overall amazing." }
-    ]
-  },
-  {
-    id: 2,
-    title: "Curly Goddess Lace Front Wig",
-    price: 289.99,
-    category: "wigs",
-    images: [
-      "https://unsplash.com/photos/hair-extensions-multiple-colors",
-      "https://unsplash.com/photos/2czK-hair-extensions",
-      "https://unsplash.com/photos/3-bN6yxk1Y8",
-      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/"
-    ],
-    rating: 4.7,
-    reviews: [
-      { user: "Emily R.", rating: 5, comment: "This wig is stunning!" },
-      { user: "Megan L.", rating: 4, comment: "Very pretty, but a bit heavy." }
-    ]
-  },
+// Generate mock products: at least 10 per category
+const mkImage = (catId, idx) => `https://picsum.photos/seed/${catId}-${idx}/900/700`;
 
-  // Hair Bundles
-  {
-    id: 3,
-    title: "Brazilian Body Wave Bundles",
-    price: 189.99,
-    category: "hair-bundles",
-    images: [
-      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/",
-      "https://unsplash.com/photos/hair-extensions-multiple-colors",
-      "https://unsplash.com/photos/2czK-hair-extensions",
-      "https://unsplash.com/photos/hair-wig-product-flat-lay-1"
-    ],
-    rating: 4.6,
-    reviews: [
-      { user: "Maria K.", rating: 5, comment: "Best hair I've ever purchased!" }
-    ]
-  },
+const generateProducts = () => {
+  const out = [];
+  let id = 100; // start ids at 100 to avoid clashes
+  const templates = {
+    wigs: ['Silky Straight', 'Curly Goddess', 'Lace Front', 'Glam Wave', 'Natural Bob', 'Deep Wave', 'Yaki Straight', 'Mermaid Curls', 'Goddess Bun', 'Vintage Roll'],
+    'hair-bundles': ['Brazilian Body Wave', 'Peruvian Loose Wave', 'Malaysian Straight', 'Indian Remy', 'Raw Virgin', 'Bundles Set A', 'Bundles Set B', 'Silky Bundles', 'Natural Wave', 'Full Head Pack'],
+    'braiding-hair': ['Kanekalon Jumbo', 'Pre-Stretched Braid', 'Senegalese Twist', 'Box Braid Pack', 'Marley Hair', 'Passion Twist', 'Havana Mambo', 'Braiding Set', 'Butterfly Locs', 'Crochet Pack'],
+    'perfume-beauty': ['Elegance Eau', 'Floral Mist', 'Night Bloom', 'Citrus Burst', 'Vanilla Lace', 'Rosewood', 'Amber Glow', 'Ocean Breeze', 'Velvet Musk', 'Signature Scent'],
+    extensions: ['Clip-in 16"', 'Clip-in 18"', 'Clip-in 20"', 'Tape-in 18"', 'Tape-in 20"', 'Weft Extensions', 'Halo Extensions', 'Skin Weft', 'Keratin Tip', 'U-Tip Pack'],
+    'hair-care': ['Argan Oil Treatment', 'Sulfate-Free Shampoo', 'Nourish Conditioner', 'Repair Mask', 'Heat Protect Spray', 'Scalp Serum', 'Detangling Spray', 'Leave-in Cream', 'Growth Oil', 'Protein Treatment'],
+    'beauty-accessories': ['Brush Set', 'Blending Sponge', 'Makeup Mirror', 'Travel Kit', 'Brush Cleaner', 'Brush Roll', 'Compact Case', 'Beauty Blender Pack', 'Eyelash Curler', 'Organizer'],
+    'beauty-tools': ['Professional Dryer', 'Flat Iron 1"', 'Ceramic Curler', 'Styling Brush', 'Heat Brush', 'Volumizer', 'Steamer', 'Trimmer', 'Styling Kit', 'Diffuser'],
+    'lash-kits': ['Luxury Lash Kit A', 'Natural Lash Set', 'Volume Lash Kit', 'Deluxe Lash Pro', 'Starter Lash Set', 'Mega Volume', 'Lash Adhesive Kit', 'Reusables Pack', 'Mini Lash Kit', 'Glamour Lashes'],
+    'sales-deals': ['Summer Bundle', 'Holiday Pack', 'Starter Bundle', 'Pro Bundle', 'Clearance Lot', 'Flash Deal', 'Buy More Save', 'Combo Pack', 'Limited Deal', 'Seasonal Box']
+  };
 
-  // Braiding Hair
-  {
-    id: 4,
-    title: "Kanekalon Braiding Hair",
-    price: 24.99,
-    category: "braiding-hair",
-    images: [
-      "https://pexels.com/photo/extension-clips-hair-set-flat-lay-76453/",
-      "https://unsplash.com/photos/hair-extensions-multiple-colors",
-      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/",
-      "https://unsplash.com/photos/2czK-hair-extensions"
-    ],
-    rating: 4.4,
-    reviews: []
-  },
+  Object.keys(templates).forEach(cat => {
+    const names = templates[cat];
+    for (let i = 0; i < names.length; i++) {
+      const title = `${names[i]} ${cat.includes('hair') || cat === 'wigs' ? '' : ''}`.trim();
+      out.push({
+        id: id++,
+        title,
+        price: +(Math.random() * (300 - 20) + 20).toFixed(2),
+        category: cat,
+        images: [mkImage(cat, i*3+1), mkImage(cat, i*3+2), mkImage(cat, i*3+3)],
+        rating: +( (Math.random() * (5 - 4) + 4).toFixed(1) ),
+        reviews: []
+      });
+    }
+  });
 
-  // Perfume & Beauty
-  {
-    id: 5,
-    title: "Elegance Eau de Parfum",
-    price: 89.99,
-    category: "perfume-beauty",
-    images: [
-      "https://pexels.com/photo/perfume-bottle-pink-background-81746/",
-      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
-      "https://pexels.com/photo/skincare-serum-flat-lay-rose-leaves-54321/",
-      "https://pexels.com/photo/beauty-scrub-and-lotion-set-pink-theme-65234/"
-    ],
-    rating: 4.9,
-    reviews: [
-      { user: "Emily R.", rating: 5, comment: "The scent lasts all day! So elegant." }
-    ]
-  },
+  return out;
+};
 
-  // Extensions
-  {
-    id: 6,
-    title: "Clip-in Hair Extensions",
-    price: 129.99,
-    category: "extensions",
-    images: [
-      "https://pexels.com/photo/extension-clips-hair-set-flat-lay-76453/",
-      "https://unsplash.com/photos/2czK-hair-extensions",
-      "https://unsplash.com/photos/hair-extensions-multiple-colors",
-      "https://pexels.com/photo/hair-bundles-collection-flat-lay-38912/"
-    ],
-    rating: 4.7,
-    reviews: []
-  },
-
-  // Hair Care
-  {
-    id: 7,
-    title: "Argan Oil Hair Treatment",
-    price: 34.99,
-    category: "hair-care",
-    images: [
-      "https://pexels.com/photo/hair-care-oil-bottle-on-table-45678/",
-      "https://unsplash.com/photos/hair-product-display-1",
-      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
-      "https://pexels.com/photo/skincare-serum-flat-lay-rose-leaves-54321/"
-    ],
-    rating: 4.5,
-    reviews: []
-  },
-
-  // Beauty Accessories
-  {
-    id: 8,
-    title: "Premium Makeup Brush Set",
-    price: 49.99,
-    category: "beauty-accessories",
-    images: [
-      "https://pexels.com/photo/beauty-accessories-flat-lay-92134/",
-      "https://unsplash.com/photos/beauty-accessory-jewelry-flat-lay",
-      "https://pexels.com/photo/pink-lipstick-blush-set-white-background-67890/",
-      "https://pexels.com/photo/beauty-scrub-and-lotion-set-pink-theme-65234/"
-    ],
-    rating: 4.3,
-    reviews: []
-  },
-
-  // Beauty Tools
-  {
-    id: 9,
-    title: "Professional Hair Dryer",
-    price: 79.99,
-    category: "beauty-tools",
-    images: [
-      "https://unsplash.com/photos/beauty-tools-display-on-white-background",
-      "https://pexels.com/photo/hair-dryer-product-white-background-10987/",
-      "https://pexels.com/photo/beauty-accessories-flat-lay-92134/",
-      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/"
-    ],
-    rating: 4.6,
-    reviews: []
-  },
-
-  // Lash Kits
-  {
-    id: 10,
-    title: "Luxury Lash Kit",
-    price: 29.99,
-    category: "lash-kits",
-    images: [
-      "https://pexels.com/photo/lash-kit-flat-lay-pink-theme-23456/",
-      "https://pexels.com/photo/pink-lipstick-blush-set-white-background-67890/",
-      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
-      "https://pexels.com/photo/beauty-accessories-flat-lay-92134/"
-    ],
-    rating: 4.8,
-    reviews: []
-  },
-
-  // Sales & Deals
-  {
-    id: 11,
-    title: "Summer Sale Bundle",
-    price: 199.99,
-    originalPrice: 299.99,
-    category: "sales-deals",
-    images: [
-      "https://unsplash.com/photos/sales-deal-beauty-product-promo",
-      "https://pexels.com/photo/beauty-products-flat-lay-wood-table-12345/",
-      "https://pexels.com/photo/pink-lipstick-blush-set-white-background-67890/",
-      "https://pexels.com/photo/beauty-scrub-and-lotion-set-pink-theme-65234/"
-    ],
-    rating: 4.9,
-    reviews: []
-  }
-];
+const mockProducts = generateProducts();
 
 const categories = [
-  { id: 'all', name: 'All Products', icon: '🛍️', quote: "Discover Your Perfect Beauty Match" },
-  { id: 'wigs', name: 'Wigs', icon: '💇', quote: "Transform Your Look Instantly" },
-  { id: 'hair-bundles', name: 'Hair Bundles', icon: '👑', quote: "Luxury That Flows Naturally" },
-  { id: 'braiding-hair', name: 'Braiding Hair', icon: '🎀', quote: "Create Masterpieces With Every Braid" },
-  { id: 'perfume-beauty', name: 'Perfume & Beauty', icon: '🌸', quote: "Scents That Speak Volumes" },
-  { id: 'extensions', name: 'Extensions', icon: '💫', quote: "Instant Length, Timeless Beauty" },
-  { id: 'hair-care', name: 'Hair Care', icon: '🧴', quote: "Nourish Your Crown With Care" },
-  { id: 'beauty-accessories', name: 'Accessories', icon: '💄', quote: "Details That Define Beauty" },
-  { id: 'beauty-tools', name: 'Beauty Tools', icon: '✨', quote: "Professional Results At Home" },
-  { id: 'lash-kits', name: 'Lash Kits', icon: '👁️', quote: "Eyes That Captivate Instantly" },
-  { id: 'sales-deals', name: 'Sales & Deals', icon: '🔥', quote: "Luxury Within Reach" }
+  { id: 'all', name: 'All Products', icon: ShoppingBag, quote: "Discover Your Perfect Beauty Match" },
+  { id: 'wigs', name: 'Wigs', icon: Scissors, quote: "Transform Your Look Instantly" },
+  { id: 'hair-bundles', name: 'Hair Bundles', icon: Crown, quote: "Luxury That Flows Naturally" },
+  { id: 'braiding-hair', name: 'Braiding Hair', icon: Scissors, quote: "Create Masterpieces With Every Braid" },
+  { id: 'perfume-beauty', name: 'Perfume & Beauty', icon: Droplet, quote: "Scents That Speak Volumes" },
+  { id: 'extensions', name: 'Extensions', icon: Gift, quote: "Instant Length, Timeless Beauty" },
+  { id: 'hair-care', name: 'Hair Care', icon: Brush, quote: "Nourish Your Crown With Care" },
+  { id: 'beauty-accessories', name: 'Accessories', icon: Gift, quote: "Details That Define Beauty" },
+  { id: 'beauty-tools', name: 'Beauty Tools', icon: Wrench, quote: "Professional Results At Home" },
+  { id: 'lash-kits', name: 'Lash Kits', icon: Eye, quote: "Eyes That Captivate Instantly" },
+  { id: 'sales-deals', name: 'Sales & Deals', icon: Star, quote: "Luxury Within Reach" }
 ];
 
 const Products = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [quantities, setQuantities] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('');
+  const [cart, setCart] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('bp_cart') || '[]');
+    } catch (e) {
+      return [];
+    }
+  });
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'all') return mockProducts;
-    return mockProducts.filter(product => product.category === selectedCategory);
-  }, [selectedCategory]);
+    let base = mockProducts;
+    if (selectedCategory !== 'all') base = base.filter(product => product.category === selectedCategory);
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      base = base.filter(p => p.title.toLowerCase().includes(q));
+    }
+    if (sortOption === 'price-asc') base = base.slice().sort((a,b) => a.price - b.price);
+    if (sortOption === 'price-desc') base = base.slice().sort((a,b) => b.price - a.price);
+    if (sortOption === 'rating-desc') base = base.slice().sort((a,b) => b.rating - a.rating);
+    return base;
+  }, [selectedCategory, searchQuery, sortOption]);
+
+  // persist cart to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('bp_cart', JSON.stringify(cart));
+    } catch (e) {
+      // ignore
+    }
+  }, [cart]);
 
   const getCategoryQuote = (categoryId) => {
     const category = categories.find(cat => cat.id === categoryId);
@@ -236,17 +125,51 @@ const Products = () => {
     setQuantities(prevQuantities => ({ ...prevQuantities, [productId]: newQuantity }));
   };
 
-  const handleAddToCart = (product) => {
-    const quantity = quantities[product.id] || 1;
-    toast.success(`Added ${quantity} ${product.title} to cart!`, {
-      position: "bottom-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
+  // stable handlers to avoid re-renders
+  const increaseQuantity = React.useCallback((productId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: (prev[productId] || 1) + 1
+    }));
+  }, []);
+
+  const decreaseQuantity = React.useCallback((productId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(1, (prev[productId] || 1) - 1)
+    }));
+  }, []);
+
+  const formatPrice = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+  const handleAddToCart = React.useCallback((product, qty = 1) => {
+    const quantity = qty || 1;
+    setCart(prev => {
+      const found = prev.find(i => i.id === product.id);
+      let next;
+      if (found) {
+        next = prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i);
+      } else {
+        next = [...prev, { id: product.id, title: product.title, price: product.price, quantity }];
+      }
+      toast.success(`Added ${quantity} × ${product.title} to cart`, { position: 'bottom-right', autoClose: 2500 });
+      return next;
     });
-  };
+    // open cart briefly
+    setIsCartOpen(true);
+  }, []);
+
+  const handleBuyNow = React.useCallback((product, qty = 1) => {
+    // Navigate to product detail view (same as clicking the title)
+    try {
+      navigate(`/products/${product.id}`, { state: product });
+    } catch (e) {
+      // fallback: show demo toast
+      toast.info(`Buy Now is a demo — ${product.title} was not purchased.`, { position: 'bottom-right', autoClose: 3000 });
+    }
+  }, [navigate]);
 
   const handleViewReviews = (product) => {
     setSelectedProduct(product);
@@ -281,29 +204,13 @@ const Products = () => {
     }
   };
 
-  const increaseQuantity = (productId, e) => {
-    e.stopPropagation();
-    setQuantities(prev => ({
-      ...prev,
-      [productId]: (prev[productId] || 1) + 1
-    }));
-  };
-
-  const decreaseQuantity = (productId, e) => {
-    e.stopPropagation();
-    setQuantities(prev => ({
-      ...prev,
-      [productId]: Math.max(1, (prev[productId] || 1) - 1)
-    }));
-  };
-
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
         size={16}
         className={index < Math.floor(rating) ? styles.filledStar : styles.emptyStar}
-        fill={index < Math.floor(rating) ? 'currentColor' : 'none'}
+        aria-hidden
       />
     ));
   };
@@ -326,26 +233,35 @@ const Products = () => {
 
         <div className={styles.productsGrid}>
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              quantity={quantities[product.id] || 1}
+              onIncrease={increaseQuantity}
+              onDecrease={decreaseQuantity}
+              onAddToCart={handleAddToCart}
+              onViewReviews={handleViewReviews}
+              openImageModal={openImageModal}
+            />
           ))}
         </div>
       </section>
     );
   };
 
-  const ProductCard = ({ product }) => {
+  const ProductCard = React.memo(function ProductCard({ product, quantity, onIncrease, onDecrease, onAddToCart, onViewReviews, openImageModal }) {
     const [hoverIndex, setHoverIndex] = useState(0);
 
     return (
       <motion.div
         className={styles.productCard}
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ duration: 0.3 }}
-        whileHover={{ y: -5 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.28 }}
+        whileHover={{ y: -6 }}
       >
-        <div 
+        <div
           className={styles.imageContainer}
           onMouseEnter={() => setHoverIndex(1)}
           onMouseLeave={() => setHoverIndex(0)}
@@ -357,96 +273,72 @@ const Products = () => {
                 key={index}
                 src={image}
                 alt={`${product.title} view ${index + 1}`}
-                className={`${styles.productImage} ${
-                  index === hoverIndex ? styles.activeImage : ''
-                }`}
+                loading="lazy"
+                className={`${styles.productImage} ${index === hoverIndex ? styles.activeImage : ''}`}
               />
             ))}
           </div>
-          
-          {/* Sale Badge */}
-          {product.originalPrice && (
-            <div className={styles.saleBadge}>SALE</div>
-          )}
 
-          {/* Image Navigation Hint */}
+          {product.originalPrice && <div className={styles.saleBadge}>SALE</div>}
+
           <div className={styles.imageNavHint}>
             <span>Click to view gallery</span>
           </div>
         </div>
 
         <div className={styles.productInfo}>
-          <h3 className={styles.productTitle}>{product.title}</h3>
-          
+          <h3 className={styles.productTitle}><Link to={`/products/${product.id}`} state={product} className={styles.productLink}>{product.title}</Link></h3>
+
           <div className={styles.priceSection}>
             {product.originalPrice ? (
               <>
-                <span className={styles.currentPrice}>
-                  ${product.price}
-                </span>
-                <span className={styles.originalPrice}>
-                  ${product.originalPrice}
-                </span>
+                <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
+                <span className={styles.originalPrice}>{formatPrice(product.originalPrice)}</span>
               </>
             ) : (
-              <span className={styles.currentPrice}>
-                ${product.price}
-              </span>
+              <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
             )}
           </div>
 
           <div className={styles.ratingSection}>
-            <div className={styles.stars}>
-              {renderStars(product.rating)}
-            </div>
+            <div className={styles.stars}>{renderStars(product.rating)}</div>
             <span className={styles.ratingValue}>({product.rating})</span>
           </div>
 
           <div className={styles.quantitySection}>
             <span className={styles.quantityLabel}>Quantity:</span>
-            <div className={styles.quantityControls}>
-              <button 
-                className={styles.quantityButton}
-                onClick={(e) => decreaseQuantity(product.id, e)}
-              >
+            <div className={styles.quantityControls} onClick={(e) => e.stopPropagation()}>
+              <button className={styles.quantityButton} onClick={(e) => onDecrease(product.id, e)}>
                 <Minus size={14} />
               </button>
-              <span className={styles.quantityValue}>
-                {quantities[product.id] || 1}
-              </span>
-              <button 
-                className={styles.quantityButton}
-                onClick={(e) => increaseQuantity(product.id, e)}
-              >
+              <span className={styles.quantityValue}>{quantity}</span>
+              <button className={styles.quantityButton} onClick={(e) => onIncrease(product.id, e)}>
                 <Plus size={14} />
               </button>
             </div>
           </div>
 
           <div className={styles.buttonGroup}>
-            <motion.button
-              className={styles.addToCartButton}
-              onClick={() => handleAddToCart(product)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.button className={styles.addToCartButton} onClick={() => onAddToCart(product, quantity)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <ShoppingCart size={18} />
               Add to Cart
             </motion.button>
-            
-            <motion.button
-              className={styles.reviewsButton}
-              onClick={() => handleViewReviews(product)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+
+            <motion.button className={styles.reviewsButton} onClick={() => onViewReviews(product)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               View Reviews
             </motion.button>
           </div>
+
+          <motion.div style={{marginTop:12}}>
+            <motion.button className={`${styles.buyNowButton} ${styles.buyNowFull}`} onClick={() => handleBuyNow(product, quantity)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              Buy Now
+            </motion.button>
+          </motion.div>
         </div>
       </motion.div>
     );
-  };
+  });
+  ProductCard.displayName = 'ProductCard';
 
   return (
     <div className={styles.container}>
@@ -468,21 +360,55 @@ const Products = () => {
 
       {/* Category Filter */}
       <section className={styles.categoryFilterSection}>
+        <div className={styles.topControls}>
+          <div className={styles.searchWrap}>
+            <input
+              className={styles.searchInput}
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className={styles.sortWrap}>
+            <select className={styles.sortSelect} value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+              <option value="">Sort</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+              <option value="rating-desc">Top Rated</option>
+            </select>
+          </div>
+        </div>
         <div className={styles.categoryScroll}>
-          {categories.map((category) => (
-            <motion.button
-              key={category.id}
-              className={`${styles.categoryButton} ${
-                selectedCategory === category.id ? styles.activeCategory : ''
-              }`}
-              onClick={() => setSelectedCategory(category.id)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className={styles.categoryIcon}>{category.icon}</span>
-              <span className={styles.categoryName}>{category.name}</span>
-            </motion.button>
-          ))}
+          {categories.map((category) => {
+            const Icon = category.icon;
+            // find first product image for this category as preview
+            const preview = mockProducts.find(p => p.category === category.id)?.images?.[0] || '';
+            return (
+              <motion.button
+                key={category.id}
+                className={`${styles.categoryButton} ${selectedCategory === category.id ? styles.activeCategory : ''}`}
+                onClick={() => setSelectedCategory(category.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className={styles.categoryFlip}>
+                  <div className={styles.categoryFlipInner}>
+                    <div className={styles.categoryFlipFront}>
+                      <Icon size={20} />
+                    </div>
+                    <div className={styles.categoryFlipBack}>
+                      {preview ? (
+                        <img src={preview} alt={`${category.name} preview`} className={styles.categoryFlipImage} />
+                      ) : (
+                        <Icon size={20} />
+                      )}
+                      <div className={styles.categoryOverlay}>{category.name}</div>
+                    </div>
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
       </section>
 
@@ -658,7 +584,7 @@ const Products = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <ShoppingCart size={18} />
-                    Add to Cart - ${selectedProduct.price}
+                    Add to Cart - {formatPrice(selectedProduct.price)}
                   </motion.button>
                 </div>
               </div>
@@ -668,6 +594,49 @@ const Products = () => {
       </AnimatePresence>
 
       <ToastContainer />
+
+      {/* Floating Cart Button & Cart Modal */}
+      <div className={styles.floatingCartWrap}>
+        <button className={styles.floatingCartButton} onClick={() => setIsCartOpen(true)} aria-label="Open cart">
+          <ShoppingCart size={20} />
+          <span className={styles.cartCount}>{cart.reduce((s,i) => s + i.quantity, 0)}</span>
+        </button>
+      </div>
+
+      {isCartOpen && (
+        <div className={styles.modalOverlay} onClick={() => setIsCartOpen(false)}>
+          <div className={styles.cartModal} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeButton} onClick={() => setIsCartOpen(false)}><X size={20} /></button>
+            <div style={{padding:20}}>
+              <h3>Cart</h3>
+              {cart.length === 0 ? (
+                <p>Your cart is empty.</p>
+              ) : (
+                <div className={styles.cartList}>
+                  {cart.map(item => (
+                    <div key={item.id} className={styles.cartItem}>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <div className={styles.cartItemMeta}>{item.quantity} × {formatPrice(item.price)}</div>
+                      </div>
+                      <div>
+                        <strong>{formatPrice(item.price * item.quantity)}</strong>
+                      </div>
+                    </div>
+                  ))}
+                  <div className={styles.cartTotal}>
+                    <strong>Total:</strong>
+                    <strong>{formatPrice(cart.reduce((s,i) => s + i.price * i.quantity, 0))}</strong>
+                  </div>
+                  <div style={{marginTop:12}}>
+                    <button className={styles.addToCartButton} onClick={() => { setCart([]); try { localStorage.removeItem('bp_cart'); } catch (e) {} toast.info('Checkout is a demo — cart cleared.'); setIsCartOpen(false); }}>Proceed to Checkout</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
