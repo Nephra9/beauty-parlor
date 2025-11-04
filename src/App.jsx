@@ -3,7 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Routes, Route } from "react-router-dom"; // ✅ Import Router components
 import "./App.css";
 import About from "./Pages/About";
-import Services from "./Pages/Services";
+import Products from "./Pages/Products";
+import ProductView from "./Pages/ProductView";
 import Specialities from "./Pages/Specialities";
 import Gallery from "./Pages/Gallery";
 import Booking from "./Pages/Booking";
@@ -14,12 +15,14 @@ function App() {
   return (
     <>
 
-      <Navbar />
+     
       <div className="Homecontent middle flex-grow-1">
+         <Navbar />
         <Routes>
           <Route index element={<Home />} />
   <Route path="about" element={<About />} />
-  <Route path="services" element={<Services />} />
+  <Route path="products" element={<Products />} />
+  <Route path="products/:id" element={<ProductView />} />
   <Route path="specialities" element={<Specialities />} />
   <Route path="gallery" element={<Gallery />} />
   <Route path="booking" element={<Booking />} />
