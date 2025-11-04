@@ -1,0 +1,25 @@
+.container {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.title {
+  color: #ff69b4;
+  margin-bottom: 25px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.list li {
+  background: #fffafc;
+  border-radius: 10px;
+  margin: 10px auto;
+  padding: 15px 20px;
+  max-width: 400px;
+  font-size: 18px;
+  color: #555;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}

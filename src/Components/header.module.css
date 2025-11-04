@@ -1,0 +1,65 @@
+.bg-pink {
+  background-color: #ff0080 !important; /* Pink navbar */
+}
+
+.navbar-nav .nav-link {
+  font-weight: 300;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffe4f1 !important;
+  transform: scale(1.05);
+}
+.nav-item{
+  font-family:Arial, Helvetica, sans-serif;
+ font-weight:500 ;
+}
+.bg-pink {
+  background-color: #ff69b4 !important;
+}
+
+.navbar-nav .nav-link {
+  font-weight: 300;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffe4f1 !important;
+  transform: scale(1.05);
+}
+
+.navbar-nav .nav-link.active {
+  color: #fff !important;
+  border-bottom: 2px solid white;
+}
+.header {
+   background-color: #ff0080 !important;
+}
+
+.navbar {
+  background-color: transparent !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.logo {
+  border: 2px solid white;
+}
+
+.brandName {
+  letter-spacing: 1px;
+}
+
+.navLink {
+  font-weight: 300;
+  transition: 0.3s;
+}
+
+.navLink:hover {
+  color: #ffe4f1 !important;
+  transform: scale(1.05);
+}
+
+.active {
+  border-bottom: 2px solid white;
+}
